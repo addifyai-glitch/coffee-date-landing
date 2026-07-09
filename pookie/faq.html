@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>FAQ — Pookie</title>
+  <meta name="description" content="Answers to common questions about Pookie, our early-access phase, privacy, and how the waitlist works." />
+  <meta name="theme-color" content="#c96bd8" />
+  <link rel="icon" type="image/svg+xml" href="../icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true">
+    <div class="aurora"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="grain"></div>
+  </div>
+
+  <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+
+  <nav class="site-nav" id="site-nav"></nav>
+
+  <main class="content-page">
+    <h1>Frequently asked questions</h1>
+
+    <div>
+      <div class="faq-item">
+        <div class="faq-question">What is Pookie? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Pookie is a modern social discovery platform built around real-world connection. Instead of optimizing for endless messaging, it's designed to help people meet sooner, share real experiences, and let chemistry play out in person rather than through a screen.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Is this a dating app? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Not in the traditional sense. Dating apps are usually built around swiping through profiles and chatting indefinitely. Pookie is built around discovery and shared moments — it's for meeting people and creating real experiences, whatever form that connection ends up taking.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">What is "Vibe Mode" and how is it different from a permanent profile label? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Vibe Mode lets you signal the kind of energy you're open to right now — casual, adventurous, low-key, ready to make plans — instead of locking you into one fixed category forever. People change day to day, and we think the app should reflect that instead of flattening you into a static label.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Is my data safe? Who can see what I submit? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Your information is stored in a secured database with row-level security, meaning the public site can only add new data — it can never read, list, or export it back out. Only the site owner can view submissions, through a private, authenticated dashboard. See our <a href="privacy.html">privacy policy</a> for full details.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Is Pookie live yet? When can I use it? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Not yet. We're in early access, validating the idea before deciding whether and how to build the full product. Joining the waitlist is the best way to hear first if and when that changes.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Do I need to pay anything right now? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>No. Everything on this site — the waitlist, the surveys, the invitation feature — is free and voluntary. We're not charging for anything during this validation phase.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">What happens after I join the waitlist? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>We'll keep your details on file so we can reach out as things develop — whether that's sharing updates, asking for more feedback, or letting you know when early access opens up further. Joining doesn't obligate you to anything, and you can ask us to delete your data at any time.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Can I suggest a different name than "Pookie"? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Please do. We know the name is a little unconventional, and we're actively collecting honest opinions on it as part of our product validation survey. Your take genuinely factors into the decision.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">How do I get in touch? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Email us any time at <a href="mailto:addify.ai@gmail.com">addify.ai@gmail.com</a>, or visit the <a href="contact.html">contact page</a>. We're a small early-access project, so replies may take a bit of time, but we read everything.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Can I delete my data? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Yes, any time and with no questions asked. Just email <a href="mailto:addify.ai@gmail.com">addify.ai@gmail.com</a> with the details you submitted, and we'll remove them.</p></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer" id="site-footer"></footer>
+
+  <script src="../config.js"></script>
+  <script src="../common.js"></script>
+  <script>
+    Shared.initTheme();
+    Shared.initChrome({ pookieBase: './', rootBase: '../', variant: 'pookie' });
+    Shared.initCursor();
+    Shared.initFaqAccordion();
+    Shared.logPageView('pookie:faq');
+  </script>
+</body>
+</html>

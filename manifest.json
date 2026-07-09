@@ -1,0 +1,18 @@
+{
+  "name": "Let's See If We Vibe",
+  "short_name": "Vibe Check",
+  "description": "A confident, witty invitation to grab an experience together — coffee, drinks, a concert, or a total surprise.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fdf1f5",
+  "theme_color": "#c96bd8",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

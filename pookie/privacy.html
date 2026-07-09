@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Privacy Policy — Pookie</title>
+  <meta name="description" content="How Pookie collects, stores, and protects your information during our early-access, pre-launch phase." />
+  <meta name="theme-color" content="#c96bd8" />
+  <link rel="icon" type="image/svg+xml" href="../icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true">
+    <div class="aurora"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="grain"></div>
+  </div>
+
+  <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+
+  <nav class="site-nav" id="site-nav"></nav>
+
+  <main class="content-page">
+    <h1>Privacy policy</h1>
+
+    <p>Pookie is currently in early access. We're validating this idea before building the full product, which means the amount of data we collect is intentionally small, and mostly optional. This page explains exactly what we collect, why, and how it's protected — no legal boilerplate, just the truth about how the site actually works.</p>
+
+    <h2>What we collect</h2>
+    <p>Depending on which form you use, we may collect:</p>
+    <ul>
+      <li><strong>Waitlist sign-up:</strong> first name, email, country, Instagram handle, age group, and activity interests — all optional except where marked required on the form.</li>
+      <li><strong>Product validation survey:</strong> whether you'd use something like Pookie, how excited you are about it, any concerns, which features interest you, willingness to pay, how likely you'd be to recommend it, how you currently meet new people, and free-text suggestions.</li>
+      <li><strong>Naming feedback:</strong> your opinion on the name "Pookie" — we know it's a little unconventional, and we're genuinely asking.</li>
+      <li><strong>Personal invitation flow (root page):</strong> if you use the invitation feature on the main site, we collect name, email, phone, activity, date, time, city, and an optional message. Activity, date, time, and city are required to send an invitation; everything else is optional.</li>
+    </ul>
+    <p>We do not require account creation, and we never ask for a password, payment details, or government ID.</p>
+
+    <h2>Anonymous page-view analytics</h2>
+    <p>To understand aggregate traffic, we log anonymous page views. Each browser is assigned a random ID stored in your browser's <code>localStorage</code> — not a cookie, and not linked to your identity in any way, unless you separately submit one of the forms above using that same browser. We don't use third-party ad trackers, and we don't do cross-site tracking.</p>
+
+    <h2>Where your data lives</h2>
+    <p>Form submissions are stored in Supabase (a hosted Postgres database) with row-level security enabled. In practice, this means the public-facing site is only able to <em>insert</em> new records — it cannot read, list, or export any data back out. Only the site owner can view submitted data, and only through an authenticated admin dashboard that isn't publicly accessible.</p>
+
+    <h2>Email notifications</h2>
+    <p>When you submit a form, we use EmailJS to send a notification email so we can follow up if needed. This means your submission is briefly processed by EmailJS's infrastructure in order to deliver that notification; we don't use it for marketing or newsletters.</p>
+
+    <h2>How we use your information</h2>
+    <p>We use what you share to: keep you informed if and when a fuller product launches, understand whether people actually want something like Pookie, and shape decisions about what to build (or whether to build it at all). We don't sell your data, and we don't share it with advertisers.</p>
+
+    <h2>Your rights</h2>
+    <p>You can ask us to delete any data you've submitted at any time, no questions asked. Just email <a href="mailto:addify.ai@gmail.com">addify.ai@gmail.com</a> with the email or details you used, and we'll remove them.</p>
+
+    <h2>This will evolve</h2>
+    <p>Because Pookie is pre-launch and still being validated, this policy may change as the product — and the data we handle — grows. If we move from early access into a real, user-facing product, we'll update this page to reflect that, and any material changes will be clearly noted here.</p>
+
+    <p><em>Last updated: early access phase.</em></p>
+
+    <p>Questions about this policy? Reach out any time at <a href="mailto:addify.ai@gmail.com">addify.ai@gmail.com</a>.</p>
+  </main>
+
+  <footer class="site-footer" id="site-footer"></footer>
+
+  <script src="../config.js"></script>
+  <script src="../common.js"></script>
+  <script>
+    Shared.initTheme();
+    Shared.initChrome({ pookieBase: './', rootBase: '../', variant: 'pookie' });
+    Shared.initCursor();
+    Shared.logPageView('pookie:privacy');
+  </script>
+</body>
+</html>
