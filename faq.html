@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>FAQ — Pookie</title>
+  <meta name="description" content="Answers to common questions about Pookie, the coffee invite flow, the waitlist, and privacy." />
+  <meta name="theme-color" content="#C8552D" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="FAQ — Pookie" />
+  <meta property="og:description" content="Answers to common questions about Pookie, the coffee invite flow, the waitlist, and privacy." />
+  <meta property="og:image" content="https://pookie.addify.ae/og-image.png" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true"><div class="grain"></div></div>
+  <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+
+  <nav class="site-nav" id="site-nav"></nav>
+
+  <main class="content-page">
+    <h1>Frequently asked questions</h1>
+
+    <div>
+      <div class="faq-item">
+        <div class="faq-question">What is Pookie? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Pookie is a simple way to turn "we should meet up" into an actual plan. Send someone a real invite — a place, a date, a time — and they get one email to accept, suggest another time, or decline. No swiping, no account required for them to respond.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Is this a dating app? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Not really — there are no profiles to browse and no matching. It's a lightweight invite tool: useful for a date, a catch-up with a friend, or a networking coffee. What it's "for" is up to you and the person you invite.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Does the person I invite need an account? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>No. They just click accept, suggest another time, or decline from the email — nothing to sign up for.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">What happens once an invite is accepted? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Both of you get an email confirming the details, with a calendar file (.ics) attached so it's one tap to add to your calendar.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Is my data safe? Who can see what I submit? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>The site never talks to the database directly. Every signup and invite goes through a server that validates and stores it in a database with no public read access at all — not even to a logged-in visitor. Only we can read it, through a private, authenticated tool. See our <a href="/datenschutz.html">privacy policy</a> for details.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">What's the waitlist for? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>We're building past the invite flow into a fuller product, and the waitlist is how we decide what to build next and who hears about it first. Joining moves you up 5 spots for every friend you refer.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Do I need to pay anything right now? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>No. The invite flow and the waitlist are both free during early access.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">How do I get in touch? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Email us any time at <a href="mailto:irfan@addify.ae">irfan@addify.ae</a>, or visit the <a href="/contact.html">contact page</a>. We're a small early-access project, so replies may take a bit of time, but we read everything.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Can I delete my data? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Yes, any time and with no questions asked. Email <a href="mailto:irfan@addify.ae">irfan@addify.ae</a> with the details you submitted (or the email address you used), and we'll remove them.</p></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer" id="site-footer"></footer>
+
+  <script src="/common.js"></script>
+  <script>
+    Shared.initTheme();
+    Shared.initChrome();
+    Shared.initCursor();
+    Shared.initFaqAccordion();
+    Shared.initAnalytics();
+  </script>
+</body>
+</html>

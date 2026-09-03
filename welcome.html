@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>You're on the list — Pookie</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#C8552D" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <div class="bg-layer" aria-hidden="true"><div class="grain"></div></div>
+  <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+
+  <nav class="site-nav" id="site-nav"></nav>
+
+  <main class="status-page">
+    <div class="status-icon">🎉</div>
+    <h1>You're on the list</h1>
+    <p class="section-sub">Thanks for confirming. Genuinely.</p>
+
+    <div class="rank-display" id="rank-display">–</div>
+    <p class="waitlist-count-label">your current position</p>
+
+    <p class="section-sub" id="referral-copy">Share your link — each friend who joins moves you up 5 spots.</p>
+
+    <div class="referral-box">
+      <input type="text" id="referral-link" readonly aria-label="Your referral link" />
+      <button class="btn btn-ghost" id="copy-referral-btn" type="button">Copy</button>
+    </div>
+
+    <div class="share-row">
+      <a class="btn btn-ghost" id="share-whatsapp" target="_blank" rel="noopener">Share on WhatsApp</a>
+      <a class="btn btn-ghost" id="share-x" target="_blank" rel="noopener">Share on X</a>
+    </div>
+  </main>
+
+  <footer class="site-footer" id="site-footer"></footer>
+
+  <canvas id="fx-canvas" class="fx-canvas" aria-hidden="true"></canvas>
+
+  <script src="/common.js"></script>
+  <script>
+    (() => {
+      'use strict';
+      Shared.initTheme();
+      Shared.initChrome();
+      Shared.initCursor();
+      Shared.initAnalytics();
+      Shared.track('waitlist_confirm');
+
+      const FX = Shared.initFX();
+
+      const params = new URLSearchParams(window.location.search);
+      const position = Number(params.get('pos')) || null;
+      const referralCode = params.get('ref') || '';
+      const referralCount = Number(params.get('rc')) || 0;
+
+      const rankDisplay = document.getElementById('rank-display');
+      if (position) {
+        const effectiveRank = Math.max(1, position - 5 * referralCount);
+        rankDisplay.textContent = `#${effectiveRank}`;
+      } else {
+        rankDisplay.textContent = '—';
+        document.getElementById('referral-copy').textContent = "We couldn't find your position — but you're on the list.";
+      }
+
+      if (referralCode) {
+        const referralUrl = `${window.location.origin}/?ref=${referralCode}`;
+        const linkInput = document.getElementById('referral-link');
+        linkInput.value = referralUrl;
+
+        document.getElementById('copy-referral-btn').addEventListener('click', async (e) => {
+          try {
+            await navigator.clipboard.writeText(referralUrl);
+            e.target.textContent = 'Copied!';
+            setTimeout(() => { e.target.textContent = 'Copy'; }, 1800);
+          } catch {
+            linkInput.select();
+          }
+        });
+
+        const shareText = encodeURIComponent("I just joined the Pookie waitlist — come meet up over coffee sometime.");
+        document.getElementById('share-whatsapp').href = `https://wa.me/?text=${shareText}%20${encodeURIComponent(referralUrl)}`;
+        document.getElementById('share-x').href = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodeURIComponent(referralUrl)}`;
+      } else {
+        document.querySelector('.referral-box').classList.add('hidden');
+        document.querySelector('.share-row').classList.add('hidden');
+      }
+
+      if (!Shared.prefersReducedMotion) {
+        setTimeout(() => FX.confettiBurst(window.innerWidth / 2, window.innerHeight / 3, 100), 300);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,9 +1,9 @@
 /* ==========================================================================
-   Shared foundation — loaded on every page (vibe, pookie, admin, content).
-   Theme toggle, nav/footer injection, cursor, magnetic buttons, ambient
-   particles, scroll-reveal, the FX canvas, Supabase REST helpers, EmailJS,
-   and lightweight privacy-friendly page-view analytics.
-   Depends on window.CONFIG from config.js.
+   Shared foundation — loaded on every page. Theme toggle, nav/footer
+   injection, cursor, magnetic buttons, ambient particles, scroll-reveal,
+   the FX canvas, a tiny fetch-JSON helper for /api/*, and the FAQ accordion.
+   The browser never talks to Supabase or Resend directly — everything goes
+   through /api/*.
    ========================================================================== */
 
 const Shared = (() => {
@@ -49,30 +49,17 @@ const Shared = (() => {
 
   /* ---------------- Nav + footer injection ---------------- */
 
-  const POOKIE_NAV_LINKS = [
-    { label: 'Philosophy', hash: '#philosophy' },
-    { label: 'Features', hash: '#features' },
-    { label: 'Vibe Mode', hash: '#vibe-mode' },
-    { label: 'How it works', hash: '#demo' },
-    { label: 'Waitlist', hash: '#waitlist' },
+  const NAV_LINKS = [
+    { label: 'How it works', href: '/#how-it-works' },
+    { label: 'Invite someone', href: '/#invite' },
+    { label: 'Waitlist', href: '/#waitlist' },
+    { label: 'FAQ', href: '/faq.html' },
   ];
 
-  const buildNav = ({ pookieBase, rootBase, variant }) => {
-    const brandHref = variant === 'vibe' ? (rootBase || './') : `${pookieBase}index.html`;
-    const brandMark = variant === 'vibe' ? '😎' : '💗';
-    const brandLabel = variant === 'vibe' ? "Let's Vibe" : 'Pookie';
-
-    const links = variant === 'vibe'
-      ? [{ label: 'Pookie ✨', href: `${pookieBase}index.html` }]
-      : [
-          ...POOKIE_NAV_LINKS.map((l) => ({ label: l.label, href: `${pookieBase}index.html${l.hash}` })),
-          { label: 'FAQ', href: `${pookieBase}faq.html` },
-        ];
-
-    const linksHtml = links.map((l) => `<li><a href="${l.href}">${l.label}</a></li>`).join('');
-
+  const buildNav = () => {
+    const linksHtml = NAV_LINKS.map((l) => `<li><a href="${l.href}">${l.label}</a></li>`).join('');
     return `
-      <a href="${brandHref}" class="nav-brand"><span class="nav-brand-mark">${brandMark}</span> ${brandLabel}</a>
+      <a href="/" class="nav-brand"><span aria-hidden="true">☕</span> Pookie</a>
       <ul class="nav-links">${linksHtml}</ul>
       <div class="nav-actions">
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
@@ -81,26 +68,23 @@ const Shared = (() => {
     `;
   };
 
-  const buildFooter = ({ pookieBase }) => `
-    <p class="footer-tagline">Built with ❤️ — Currently in Early Access</p>
-    <p class="footer-sub">Help shape the future of real-world social discovery. Good vibes only.</p>
+  const buildFooter = () => `
+    <p class="footer-tagline">Pookie ☕</p>
+    <p class="footer-sub">Meet for coffee. Actually meet.</p>
     <ul class="footer-links">
-      <li><a href="${pookieBase}about.html">About</a></li>
-      <li><a href="${pookieBase}privacy.html">Privacy</a></li>
-      <li><a href="${pookieBase}terms.html">Terms</a></li>
-      <li><a href="${pookieBase}contact.html">Contact</a></li>
-      <li><a href="${pookieBase}index.html#waitlist">Waitlist</a></li>
-      <li><a href="${pookieBase}faq.html">FAQ</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/faq.html">FAQ</a></li>
+      <li><a href="/contact.html">Contact</a></li>
+      <li><a href="/datenschutz.html">Datenschutz</a></li>
+      <li><a href="/impressum.html">Impressum</a></li>
     </ul>
-    <p class="footer-credit">© <span id="footer-year"></span> Pookie Labs. Made for humans, not algorithms.</p>
+    <p class="footer-credit">© <span id="footer-year"></span> Pookie. Made for real meetups, not endless scrolling.</p>
   `;
 
-  const initChrome = (opts) => {
-    const options = { pookieBase: './', rootBase: './', variant: 'pookie', minimalNav: false, ...opts };
+  const initChrome = () => {
     const navEl = document.getElementById('site-nav');
     if (navEl) {
-      navEl.innerHTML = buildNav(options);
-      if (options.minimalNav) navEl.classList.add('nav-minimal');
+      navEl.innerHTML = buildNav();
       const menuToggle = document.getElementById('nav-menu-toggle');
       if (menuToggle) menuToggle.addEventListener('click', () => navEl.classList.toggle('nav-open'));
       const themeBtn = document.getElementById('theme-toggle');
@@ -108,7 +92,7 @@ const Shared = (() => {
     }
     const footerEl = document.getElementById('site-footer');
     if (footerEl) {
-      footerEl.innerHTML = buildFooter(options);
+      footerEl.innerHTML = buildFooter();
       const yearEl = document.getElementById('footer-year');
       if (yearEl) yearEl.textContent = new Date().getFullYear();
     }
@@ -125,7 +109,7 @@ const Shared = (() => {
     let rx = x;
     let ry = y;
     window.addEventListener('pointermove', (e) => { x = e.clientX; y = e.clientY; });
-    const hoverTargets = 'button, a, input, select, textarea, .field, .chip, .feature-card, .vibe-chip, .demo-flow-item';
+    const hoverTargets = 'button, a, input, select, textarea, .field, .invite-preview';
     document.addEventListener('pointerover', (e) => {
       if (e.target.closest && e.target.closest(hoverTargets)) cursorDot.classList.add('cursor-hover');
     });
@@ -145,7 +129,7 @@ const Shared = (() => {
 
   const attachMagnetic = (el) => {
     if (prefersReducedMotion || isCoarsePointer) return;
-    const strength = 0.28;
+    const strength = 0.22;
     el.addEventListener('mousemove', (e) => {
       const rect = el.getBoundingClientRect();
       const relX = e.clientX - (rect.left + rect.width / 2);
@@ -159,6 +143,22 @@ const Shared = (() => {
     document.querySelectorAll(selector).forEach(attachMagnetic);
   };
 
+  /* ---------------- Tilt (interactive invite-preview card) ---------------- */
+
+  const initTilt = (selector = '.invite-preview') => {
+    if (prefersReducedMotion || isCoarsePointer) return;
+    document.querySelectorAll(selector).forEach((el) => {
+      const strength = 10;
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const relX = (e.clientX - rect.left) / rect.width - 0.5;
+        const relY = (e.clientY - rect.top) / rect.height - 0.5;
+        el.style.transform = `rotateY(${relX * strength}deg) rotateX(${relY * -strength}deg)`;
+      });
+      el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+    });
+  };
+
   /* ---------------- Ambient particles ---------------- */
 
   const initParticles = (containerId = 'particles') => {
@@ -167,17 +167,17 @@ const Shared = (() => {
     const spawn = () => {
       const el = document.createElement('span');
       el.className = 'particle';
-      const size = rand(3, 7);
+      const size = rand(3, 6);
       el.style.width = `${size}px`;
       el.style.height = `${size}px`;
       el.style.left = `${rand(0, 100)}vw`;
       el.style.bottom = '-4vh';
-      el.style.setProperty('--drift', `${rand(-60, 60)}px`);
-      el.style.animationDuration = `${rand(12, 22)}s`;
+      el.style.setProperty('--drift', `${rand(-50, 50)}px`);
+      el.style.animationDuration = `${rand(14, 24)}s`;
       layer.appendChild(el);
-      setTimeout(() => el.remove(), 23000);
+      setTimeout(() => el.remove(), 25000);
     };
-    setInterval(spawn, 900);
+    setInterval(spawn, 1400);
   };
 
   /* ---------------- Scroll reveal ---------------- */
@@ -200,7 +200,7 @@ const Shared = (() => {
     items.forEach((el) => observer.observe(el));
   };
 
-  /* ---------------- FX canvas (confetti / hearts / sparkles) ---------------- */
+  /* ---------------- FX canvas (confetti / sparkles, café palette) ---------------- */
 
   const initFX = (canvasId = 'fx-canvas') => {
     const canvas = document.getElementById(canvasId);
@@ -220,7 +220,7 @@ const Shared = (() => {
     resize();
     window.addEventListener('resize', resize);
 
-    const MAX_PARTICLES = 380;
+    const MAX_PARTICLES = 260;
     let running = false;
 
     function loop() {
@@ -240,11 +240,13 @@ const Shared = (() => {
       ensureLoop();
     };
 
+    const PALETTE = ['#C8552D', '#8A9A7B', '#F4EBDD', '#2B1D16'];
+
     class ConfettiPiece {
       constructor(x, y) {
         this.x = x; this.y = y;
         this.w = rand(6, 11); this.h = rand(8, 14);
-        this.color = ['#ff6f91', '#c96bd8', '#7c6bf0', '#ffb17a', '#ffffff'][Math.floor(rand(0, 5))];
+        this.color = PALETTE[Math.floor(rand(0, PALETTE.length))];
         this.vx = rand(-6, 6); this.vy = rand(-11, -4);
         this.rotation = rand(0, Math.PI * 2); this.vr = rand(-0.2, 0.2);
         this.gravity = 0.28; this.life = 1; this.decay = rand(0.006, 0.012);
@@ -254,26 +256,6 @@ const Shared = (() => {
         c.save(); c.globalAlpha = clamp(this.life, 0, 1);
         c.translate(this.x, this.y); c.rotate(this.rotation);
         c.fillStyle = this.color; c.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
-        c.restore();
-      }
-    }
-
-    class HeartParticle {
-      constructor(x, y, opts = {}) {
-        this.x = x; this.y = y;
-        this.size = opts.size || rand(14, 24);
-        this.vx = opts.vx ?? rand(-5, 5);
-        this.vy = opts.vy ?? rand(-9, -3);
-        this.gravity = opts.gravity ?? 0.18;
-        this.life = 1; this.decay = opts.decay || rand(0.007, 0.014);
-        this.rotation = rand(-0.3, 0.3);
-      }
-      update() { this.vy += this.gravity; this.x += this.vx; this.y += this.vy; this.life -= this.decay; }
-      draw(c) {
-        c.save(); c.globalAlpha = clamp(this.life, 0, 1);
-        c.translate(this.x, this.y); c.rotate(this.rotation);
-        c.font = `${this.size}px sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
-        c.fillText('❤️', 0, 0);
         c.restore();
       }
     }
@@ -294,91 +276,40 @@ const Shared = (() => {
     }
 
     return {
-      confettiBurst(x, y, count = 100) {
+      confettiBurst(x, y, count = 90) {
         const items = [];
         for (let i = 0; i < count; i += 1) items.push(new ConfettiPiece(x, y));
-        addParticles(items);
-      },
-      heartBurst(x, y, count = 24) {
-        const items = [];
-        for (let i = 0; i < count; i += 1) {
-          const angle = rand(0, Math.PI * 2);
-          const speed = rand(3, 8);
-          items.push(new HeartParticle(x, y, { vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, gravity: 0.2 }));
-        }
         addParticles(items);
       },
       sparkleBurst(x, y, count = 10) {
         const items = [];
         for (let i = 0; i < count; i += 1) {
           const angle = rand(0, Math.PI * 2);
-          items.push(new SparkParticle(x, y, angle, rand(1.5, 4.5), ['#ff6f91', '#c96bd8', '#7c6bf0'][Math.floor(rand(0, 3))]));
+          items.push(new SparkParticle(x, y, angle, rand(1.5, 4.5), PALETTE[Math.floor(rand(0, PALETTE.length))]));
         }
         addParticles(items);
       },
     };
   };
 
-  /* ---------------- Supabase REST helpers ---------------- */
+  /* ---------------- API fetch helper (/api/*) ---------------- */
 
-  const supabaseReady = () => Boolean(window.CONFIG && CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
-
-  const supabaseHeaders = () => ({
-    'Content-Type': 'application/json',
-    apikey: CONFIG.SUPABASE_ANON_KEY,
-    Authorization: `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
-  });
-
-  const supabaseInsert = async (table, rows, { returnRepresentation = false } = {}) => {
-    if (!supabaseReady()) return null;
-    const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/${table}`, {
+  const apiPost = async (path, body) => {
+    const res = await fetch(path, {
       method: 'POST',
-      headers: { ...supabaseHeaders(), Prefer: returnRepresentation ? 'return=representation' : 'return=minimal' },
-      body: JSON.stringify(rows),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
     });
-    if (!res.ok) throw new Error(`Supabase insert into ${table} failed with status ${res.status}`);
-    return returnRepresentation ? res.json() : null;
+    let data = null;
+    try { data = await res.json(); } catch { /* non-JSON response */ }
+    return { ok: res.ok, status: res.status, data };
   };
 
-  const supabaseUpdate = async (table, id, patch) => {
-    if (!supabaseReady()) return null;
-    const res = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
-      method: 'PATCH',
-      headers: { ...supabaseHeaders(), Prefer: 'return=minimal' },
-      body: JSON.stringify(patch),
-    });
-    if (!res.ok) throw new Error(`Supabase update on ${table} failed with status ${res.status}`);
-  };
-
-  /* ---------------- EmailJS ---------------- */
-
-  const initEmailJS = () => {
-    if (window.emailjs && window.CONFIG && CONFIG.EMAILJS_PUBLIC_KEY) {
-      emailjs.init({ publicKey: CONFIG.EMAILJS_PUBLIC_KEY });
-    }
-  };
-
-  const sendEmail = async (templateId, params) => {
-    if (!window.emailjs || !window.CONFIG || !CONFIG.EMAILJS_SERVICE_ID || !templateId) return;
-    await emailjs.send(CONFIG.EMAILJS_SERVICE_ID, templateId, params);
-  };
-
-  /* ---------------- Lightweight, privacy-friendly analytics ---------------- */
-
-  const SESSION_KEY = 'pookie-session-id';
-
-  const getSessionId = () => {
-    let id = localStorage.getItem(SESSION_KEY);
-    if (!id) {
-      id = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
-      localStorage.setItem(SESSION_KEY, id);
-    }
-    return id;
-  };
-
-  const logPageView = (page) => {
-    if (!supabaseReady()) return;
-    supabaseInsert('page_views', [{ page, session_id: getSessionId() }]).catch(() => {});
+  const apiGet = async (path) => {
+    const res = await fetch(path);
+    let data = null;
+    try { data = await res.json(); } catch { /* non-JSON response */ }
+    return { ok: res.ok, status: res.status, data };
   };
 
   /* ---------------- FAQ accordion ---------------- */
@@ -397,6 +328,23 @@ const Shared = (() => {
     });
   };
 
+  /* ---------------- Analytics (Plausible, gated to the production domain) ---------------- */
+
+  const PLAUSIBLE_DOMAIN = 'pookie.addify.ae';
+
+  const initAnalytics = () => {
+    if (window.location.hostname !== PLAUSIBLE_DOMAIN) return;
+    const script = document.createElement('script');
+    script.defer = true;
+    script.dataset.domain = PLAUSIBLE_DOMAIN;
+    script.src = 'https://plausible.io/js/script.js';
+    document.head.appendChild(script);
+  };
+
+  const track = (eventName) => {
+    if (typeof window.plausible === 'function') window.plausible(eventName);
+  };
+
   return {
     prefersReducedMotion,
     isCoarsePointer,
@@ -408,16 +356,14 @@ const Shared = (() => {
     initChrome,
     initCursor,
     initMagnetic,
+    initTilt,
     initParticles,
     initReveal,
     initFX,
-    supabaseReady,
-    supabaseInsert,
-    supabaseUpdate,
-    initEmailJS,
-    sendEmail,
-    getSessionId,
-    logPageView,
+    apiPost,
+    apiGet,
     initFaqAccordion,
+    initAnalytics,
+    track,
   };
 })();

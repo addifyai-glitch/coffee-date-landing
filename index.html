@@ -3,201 +3,221 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Let's See If We Vibe 😎</title>
-  <meta name="description" content="A confident, no-pressure invitation to grab an experience together — coffee, drinks, a concert, or a total surprise. If we vibe, awesome. If not, no hard feelings." />
-  <meta name="theme-color" content="#c96bd8" />
-  <link rel="manifest" href="manifest.json" />
+  <title>Pookie — Meet for coffee. Actually meet.</title>
+  <meta name="description" content="Skip the endless chat. Send someone a real coffee invite — they accept, suggest another time, or decline by email, no account needed — or join the waitlist for what's next." />
+  <meta name="theme-color" content="#C8552D" />
+  <link rel="manifest" href="/manifest.json" />
 
-  <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Let's See If We Vibe 😎" />
-  <meta property="og:description" content="I have an idea. It's either brilliant or terrible. Only one way to find out." />
-  <meta property="og:image" content="icon.svg" />
+  <meta property="og:title" content="Pookie — Meet for coffee. Actually meet." />
+  <meta property="og:description" content="Send a real coffee invite in two minutes. They accept, suggest another time, or decline by email — no account needed." />
+  <meta property="og:image" content="https://pookie.addify.ae/og-image.png" />
+  <meta property="og:url" content="https://pookie.addify.ae/" />
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Let's See If We Vibe 😎" />
-  <meta name="twitter:description" content="One click. Zero pressure. Possibly a great story." />
-  <meta name="twitter:image" content="icon.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pookie — Meet for coffee. Actually meet." />
+  <meta name="twitter:description" content="Send a real coffee invite in two minutes. No swiping, no endless chat." />
+  <meta name="twitter:image" content="https://pookie.addify.ae/og-image.png" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="icon.svg" />
-  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <link rel="apple-touch-icon" href="/icon.svg" />
 
-  <!-- Structured data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "Let's See If We Vibe",
-    "description": "A confident, no-pressure invitation to grab an experience together.",
-    "inLanguage": "en"
+    "@type": "Organization",
+    "name": "Pookie",
+    "description": "Send a real coffee invite, or join the waitlist for what's next.",
+    "slogan": "Meet for coffee. Actually meet."
   }
   </script>
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 
-  <!-- Animated aurora background -->
   <div class="bg-layer" aria-hidden="true">
-    <div class="aurora"></div>
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
     <div class="grain"></div>
     <div id="particles" class="particles-layer"></div>
   </div>
 
-  <!-- Custom cursor -->
   <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
 
-  <nav class="site-nav nav-minimal" id="site-nav"></nav>
+  <nav class="site-nav" id="site-nav"></nav>
 
-  <main class="stage" id="stage">
+  <main>
 
-    <!-- HERO / PITCH SECTION -->
-    <section id="hero-section" class="card hero-card">
-      <div id="pitch-block">
-        <p class="eyebrow" id="eyebrow-text">A mildly reckless proposal</p>
-        <h1 class="headline" id="headline-text">I have a slightly irresponsible idea.<br /><span class="highlight">Interested?</span></h1>
-        <p class="subhead" id="subhead-text">Only one way to find out.</p>
+    <!-- ================= HERO ================= -->
+    <section class="hero section">
+      <div class="hero-copy">
+        <p class="hero-eyebrow reveal in-view">Now in early access</p>
+        <h1 class="hero-title reveal in-view">Meet for coffee.<br /><span class="accent">Actually meet.</span></h1>
+        <p class="hero-sub reveal in-view">Skip the endless chat. Send someone a real invite — they accept, suggest another time, or decline by email. No account needed.</p>
+        <div class="hero-cta-row reveal in-view">
+          <a href="#invite" class="btn btn-primary magnetic">Send an invite ☕</a>
+          <a href="#waitlist" class="btn btn-ghost magnetic">Join the waitlist</a>
+        </div>
       </div>
 
-      <p class="rotator-line">
-        Maybe it's <span id="activity-word" class="activity-word">☕ coffee</span>. Who's to say.
-      </p>
-
-      <p id="main-question" class="main-question">Feel like finding out if we vibe?</p>
-
-      <div class="button-row" id="button-row">
-        <button id="yes-btn" class="btn btn-yes magnetic" type="button">
-          Let's do it <span class="btn-emoji">😎</span>
-        </button>
-        <button id="no-btn" class="btn btn-no" type="button">
-          Maybe another time
-        </button>
+      <div class="invite-preview-wrap reveal in-view">
+        <div class="invite-preview" id="invite-preview">
+          <p class="invite-preview-eyebrow">Coffee invite</p>
+          <div class="invite-preview-row">
+            <div class="invite-preview-avatar" aria-hidden="true">🙂</div>
+            <div>
+              <div class="invite-preview-name">You → Alex</div>
+              <div class="invite-preview-meta">Friday, 5:00 PM</div>
+            </div>
+          </div>
+          <div class="invite-preview-details">
+            <div>📍 Café Central, Vienna</div>
+            <div>💬 "Been meaning to catch up — coffee this week?"</div>
+          </div>
+          <div class="invite-preview-status">Waiting for a reply</div>
+        </div>
       </div>
-
-      <p id="escape-message" class="escape-message" aria-live="polite"></p>
     </section>
 
-    <!-- DECLINED SECTION -->
-    <section id="declined-section" class="card declined-card hidden" aria-live="polite">
-      <h2 class="declined-title">No worries. 👋</h2>
-      <p class="declined-sub">Thanks for stopping by. Wishing you lots of fun and good vibes! ✨</p>
-      <p class="declined-note">The offer doesn't expire, though.</p>
-      <button id="reconsider-btn" class="btn btn-ghost" type="button">Actually, let's do it</button>
-    </section>
+    <!-- ================= INVITE FORM ================= -->
+    <section class="section section-narrow" id="invite">
+      <p class="eyebrow reveal">Send a real invite</p>
+      <h2 class="section-title reveal">Ask someone for coffee</h2>
+      <p class="section-sub reveal">They'll get an email to accept, suggest another time, or decline — no pressure either way.</p>
 
-    <!-- SUCCESS / PLANNING CARD -->
-    <section id="success-section" class="card success-card hidden" aria-live="polite">
-
-      <div id="plan-step">
-        <h2 class="success-title">Look at that. We're doing this. <span class="wink">😏</span></h2>
-        <p class="success-sub">When are you free?</p>
-
-        <form id="plan-form" class="plan-form" novalidate>
+      <div class="card mt-lg reveal">
+        <form id="invite-form" novalidate>
           <div class="field-grid">
             <label class="field">
-              <span class="field-label">Name <em>(optional)</em></span>
-              <input type="text" id="name-input" name="name" autocomplete="name" placeholder="What should I call you?" />
+              <span class="field-label">Your name</span>
+              <input type="text" id="inv-sender-name" autocomplete="name" required />
             </label>
-
             <label class="field">
-              <span class="field-label">Email <em>(optional)</em></span>
-              <input type="email" id="email-input" name="email" autocomplete="email" placeholder="you@example.com" />
+              <span class="field-label">Your email</span>
+              <input type="email" id="inv-sender-email" autocomplete="email" required />
             </label>
-
             <label class="field">
-              <span class="field-label">Phone <em>(optional)</em></span>
-              <input type="tel" id="phone-input" name="phone" autocomplete="tel" placeholder="+1 555 123 4567" />
+              <span class="field-label">Their name <em>(optional)</em></span>
+              <input type="text" id="inv-recipient-name" />
             </label>
-
             <label class="field">
-              <span class="field-label">Preferred activity</span>
-              <select id="activity-input" name="activity" required>
-                <option value="" disabled selected>Pick your poison</option>
-                <option value="Coffee">☕ Coffee</option>
-                <option value="Drinks">🍸 Drinks</option>
-                <option value="Dinner">🍕 Dinner</option>
-                <option value="Live music">🎵 Live music</option>
-                <option value="Festival">🎪 Festival</option>
-                <option value="Bowling">🎳 Bowling</option>
-                <option value="Arcade">🕹️ Arcade</option>
-                <option value="Comedy show">🎤 Comedy show</option>
-                <option value="Road trip">🚗 Road trip</option>
-                <option value="Sunset walk">🌅 Sunset walk</option>
-                <option value="Ice cream">🍦 Ice cream</option>
-                <option value="Museum">🖼️ Museum</option>
-                <option value="Food adventure">🌮 Food adventure</option>
-                <option value="Surprise me">🎲 Surprise me</option>
-              </select>
+              <span class="field-label">Their email</span>
+              <input type="email" id="inv-recipient-email" required />
             </label>
-
+            <label class="field field-full">
+              <span class="field-label">Place</span>
+              <input type="text" id="inv-place" placeholder="Café Central, Vienna" required />
+            </label>
             <label class="field">
               <span class="field-label">Date</span>
-              <input type="date" id="date-input" name="date" required />
+              <input type="date" id="inv-date" required />
             </label>
-
             <label class="field">
               <span class="field-label">Time</span>
-              <input type="time" id="time-input" name="time" required />
+              <input type="time" id="inv-time" required />
             </label>
-
-            <label class="field field-full">
-              <span class="field-label">City</span>
-              <input type="text" id="city-input" name="city" placeholder="Where should this happen?" required />
-            </label>
-
             <label class="field field-full">
               <span class="field-label">Message <em>(optional)</em></span>
-              <textarea id="message-input" name="message" rows="3" placeholder="Anything I should know?"></textarea>
+              <textarea id="inv-message" rows="2" placeholder="Anything you'd like to add?"></textarea>
             </label>
           </div>
 
-          <button type="submit" id="submit-btn" class="btn btn-confirm magnetic">Lock it in <span class="btn-emoji">😎</span></button>
+          <label class="honeypot-field" aria-hidden="true">
+            Website
+            <input type="text" id="inv-website" tabindex="-1" autocomplete="off" />
+          </label>
+
+          <button type="submit" class="btn btn-confirm magnetic" id="invite-submit">Send the invite</button>
+          <p class="form-message" id="invite-form-message" aria-live="polite"></p>
         </form>
-      </div>
 
-      <div id="confirmed-step" class="hidden">
-        <h2 class="confirmed-title">Good vibes only <span class="sparkle-emoji">✨</span></h2>
-        <div class="good-vibes-copy">
-          <p>You bring your vibe.</p>
-          <p>I'll bring mine.</p>
-          <p>If we vibe, awesome.</p>
-          <p>If we don't, that's perfectly okay.</p>
-          <p>No drama.</p>
-          <p>No expectations.</p>
-          <p>No hard feelings.</p>
-          <p>Life's too short not to meet interesting people.</p>
-          <p>Let's make a great memory and see where life takes us.</p>
-          <p>I enjoy spontaneous adventures.</p>
-          <p>Maybe you'll enjoy them too.</p>
+        <div class="form-success hidden" id="invite-success">
+          <div class="icon">☕</div>
+          <h3>Invite sent</h3>
+          <p>We'll email you the moment they respond.</p>
         </div>
-        <p id="confirmed-recap" class="confirmed-recap"></p>
-        <a id="whatsapp-fallback" class="btn btn-ghost" href="#" target="_blank" rel="noopener">Open WhatsApp</a>
       </div>
+    </section>
 
+    <!-- ================= HOW IT WORKS ================= -->
+    <section class="section section-narrow section-center" id="how-it-works">
+      <p class="eyebrow reveal">How it works</p>
+      <h2 class="section-title reveal">Three steps, no swiping</h2>
+
+      <div class="steps">
+        <div class="step-card reveal">
+          <div class="step-num">01</div>
+          <h3 class="step-title">Send an invite</h3>
+          <p class="step-text">Pick someone, a place, and a time. Or join the waitlist if you're just here early.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">02</div>
+          <h3 class="step-title">They respond</h3>
+          <p class="step-text">One email, three options: accept, suggest another time, or decline. No account needed.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">03</div>
+          <h3 class="step-title">You meet up</h3>
+          <p class="step-text">Once it's confirmed, you both get a calendar invite. Just show up.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= WAITLIST ================= -->
+    <section class="section section-narrow section-center" id="waitlist">
+      <p class="eyebrow reveal">Early access</p>
+      <h2 class="section-title reveal">Join the waitlist</h2>
+      <p class="section-sub reveal">No spam — just a heads up when things move. Referring friends moves you up.</p>
+
+      <div class="card waitlist-card mt-lg reveal">
+        <form id="waitlist-form" novalidate>
+          <div class="field-grid">
+            <label class="field">
+              <span class="field-label">Name <em>(optional)</em></span>
+              <input type="text" id="wl-name" autocomplete="name" />
+            </label>
+            <label class="field">
+              <span class="field-label">Email</span>
+              <input type="email" id="wl-email" autocomplete="email" required />
+            </label>
+            <label class="field field-full">
+              <span class="field-label">City <em>(optional)</em></span>
+              <input type="text" id="wl-city" autocomplete="address-level2" />
+            </label>
+          </div>
+
+          <label class="honeypot-field" aria-hidden="true">
+            Website
+            <input type="text" id="wl-website" tabindex="-1" autocomplete="off" />
+          </label>
+
+          <label class="checkbox-field">
+            <input type="checkbox" id="wl-consent" required />
+            <span>I agree to the <a href="/datenschutz.html">privacy policy</a> and to receive emails about Pookie.</span>
+          </label>
+
+          <button type="submit" class="btn btn-confirm magnetic" id="waitlist-submit">Join the waitlist</button>
+          <p class="form-message" id="waitlist-form-message" aria-live="polite"></p>
+        </form>
+
+        <div class="form-success hidden" id="waitlist-success">
+          <div class="icon">📬</div>
+          <h3>Check your inbox</h3>
+          <p>Click the confirmation link we just sent to lock in your spot.</p>
+        </div>
+      </div>
     </section>
 
   </main>
 
   <footer class="site-footer" id="site-footer"></footer>
 
-  <!-- Canvas layer for confetti / heart bursts -->
   <canvas id="fx-canvas" class="fx-canvas" aria-hidden="true"></canvas>
 
-  <!-- EmailJS (only actually sends once config.js has real keys) -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
-  <script src="config.js"></script>
-  <script src="common.js"></script>
-  <script src="vibe.js"></script>
+  <script src="/common.js"></script>
+  <script src="/app.js"></script>
 </body>
 </html>

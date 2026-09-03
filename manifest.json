@@ -1,12 +1,12 @@
 {
-  "name": "Let's See If We Vibe",
-  "short_name": "Vibe Check",
-  "description": "A confident, witty invitation to grab an experience together — coffee, drinks, a concert, or a total surprise.",
-  "start_url": "./index.html",
-  "scope": "./",
+  "name": "Pookie",
+  "short_name": "Pookie",
+  "description": "Meet for coffee. Actually meet. Send a real invite, or join the waitlist.",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#fdf1f5",
-  "theme_color": "#c96bd8",
+  "background_color": "#F4EBDD",
+  "theme_color": "#C8552D",
   "icons": [
     {
       "src": "icon.svg",

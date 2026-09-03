@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Respond to an invite — Pookie</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#C8552D" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <div class="bg-layer" aria-hidden="true"><div class="grain"></div></div>
+  <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+
+  <nav class="site-nav" id="site-nav"></nav>
+
+  <main class="status-page">
+
+    <div id="loading-state">
+      <div class="status-icon">☕</div>
+      <p class="section-sub">Loading your invite...</p>
+    </div>
+
+    <div id="error-state" class="hidden">
+      <div class="status-icon">😕</div>
+      <h1 id="error-title">Something went wrong</h1>
+      <p class="section-sub" id="error-message"></p>
+      <a href="/" class="btn btn-ghost">Back to Pookie</a>
+    </div>
+
+    <div id="detail-state" class="hidden">
+      <div class="status-icon">☕</div>
+      <h1 id="detail-heading">You've been invited for coffee</h1>
+      <p class="section-sub" id="detail-sub"></p>
+
+      <dl class="invite-detail-list">
+        <div>
+          <dt>Place</dt>
+          <dd id="detail-place">–</dd>
+        </div>
+        <div>
+          <dt>When</dt>
+          <dd id="detail-when">–</dd>
+        </div>
+        <div id="detail-message-wrap" class="hidden">
+          <dt>Message</dt>
+          <dd id="detail-message">–</dd>
+        </div>
+      </dl>
+
+      <div class="respond-actions" id="recipient-actions">
+        <button class="btn btn-primary magnetic" id="accept-btn" type="button">Accept</button>
+        <button class="btn btn-ghost" id="propose-btn" type="button">Suggest another time</button>
+        <button class="btn btn-ghost" id="decline-btn" type="button">Decline</button>
+      </div>
+
+      <div class="respond-actions hidden" id="sender-actions">
+        <button class="btn btn-primary magnetic" id="accept-proposed-btn" type="button">Accept this time</button>
+      </div>
+
+      <form class="propose-form" id="propose-form">
+        <label class="field">
+          <span class="field-label">New date</span>
+          <input type="date" id="propose-date" required />
+        </label>
+        <label class="field">
+          <span class="field-label">New time</span>
+          <input type="time" id="propose-time" required />
+        </label>
+        <button type="submit" class="btn btn-confirm magnetic mt-lg">Send the new time</button>
+      </form>
+
+      <p class="form-message" id="respond-message" aria-live="polite"></p>
+    </div>
+
+    <div id="done-state" class="hidden">
+      <div class="status-icon" id="done-icon">✅</div>
+      <h1 id="done-heading">All set</h1>
+      <p class="section-sub" id="done-sub"></p>
+      <a href="/" class="btn btn-ghost">Back to Pookie</a>
+    </div>
+
+  </main>
+
+  <footer class="site-footer" id="site-footer"></footer>
+
+  <script src="/common.js"></script>
+  <script>
+    (() => {
+      'use strict';
+      Shared.initTheme();
+      Shared.initChrome();
+      Shared.initCursor();
+      Shared.initAnalytics();
+
+      const token = new URLSearchParams(window.location.search).get('token');
+
+      const loadingState = document.getElementById('loading-state');
+      const errorState = document.getElementById('error-state');
+      const detailState = document.getElementById('detail-state');
+      const doneState = document.getElementById('done-state');
+
+      const showOnly = (el) => {
+        [loadingState, errorState, detailState, doneState].forEach((s) => s.classList.add('hidden'));
+        el.classList.remove('hidden');
+      };
+
+      const showError = (message) => {
+        document.getElementById('error-message').textContent = message || 'This link looks invalid.';
+        showOnly(errorState);
+      };
+
+      if (!token) {
+        showError('No invite token was provided.');
+        return;
+      }
+
+      const formatWhen = (iso, timezone) => {
+        try {
+          return new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeStyle: 'short', timeZone: timezone || 'Europe/Vienna' }).format(new Date(iso));
+        } catch {
+          return iso;
+        }
+      };
+
+      let role = 'recipient';
+
+      const init = async () => {
+        const { ok, data } = await Shared.apiGet(`/api/invite?token=${encodeURIComponent(token)}`);
+        if (!ok || !data?.ok) {
+          showError(data?.error);
+          return;
+        }
+
+        role = data.role;
+        const invite = data.invite;
+
+        document.getElementById('detail-place').textContent = invite.place;
+        document.getElementById('detail-when').textContent = formatWhen(invite.starts_at, invite.timezone);
+        if (invite.message) {
+          document.getElementById('detail-message-wrap').classList.remove('hidden');
+          document.getElementById('detail-message').textContent = invite.message;
+        }
+
+        if (role === 'sender') {
+          document.getElementById('detail-heading').textContent = 'They suggested a new time';
+          document.getElementById('detail-sub').textContent = `From ${invite.recipient_name || 'them'}`;
+          document.getElementById('recipient-actions').classList.add('hidden');
+          document.getElementById('sender-actions').classList.remove('hidden');
+        } else {
+          document.getElementById('detail-heading').textContent = 'You’ve been invited for coffee';
+          document.getElementById('detail-sub').textContent = `${invite.sender_name} would like to meet up.`;
+        }
+
+        showOnly(detailState);
+      };
+
+      init();
+
+      /* ---- Actions ---- */
+
+      const respondMessage = document.getElementById('respond-message');
+      const setMessage = (text, kind) => {
+        respondMessage.textContent = text;
+        respondMessage.classList.remove('is-error', 'is-success');
+        if (kind) respondMessage.classList.add(kind);
+      };
+
+      const disableActions = (disabled) => {
+        document.querySelectorAll('#recipient-actions button, #sender-actions button').forEach((b) => { b.disabled = disabled; });
+      };
+
+      const finish = (heading, sub, icon) => {
+        document.getElementById('done-heading').textContent = heading;
+        document.getElementById('done-sub').textContent = sub;
+        document.getElementById('done-icon').textContent = icon;
+        showOnly(doneState);
+      };
+
+      const respond = async (action, extra) => {
+        setMessage('', null);
+        disableActions(true);
+        const { ok, data } = await Shared.apiPost('/api/invite/respond', { token, action, ...extra });
+        disableActions(false);
+
+        if (!ok || !data?.ok) {
+          setMessage(data?.error || 'Something went wrong. Please try again.', 'is-error');
+          return false;
+        }
+        return true;
+      };
+
+      document.getElementById('accept-btn').addEventListener('click', async () => {
+        if (await respond('accept')) {
+          Shared.track('invite_accept');
+          finish('Coffee confirmed', "You'll both get a calendar invite by email.", '✅');
+        }
+      });
+
+      document.getElementById('accept-proposed-btn').addEventListener('click', async () => {
+        if (await respond('accept')) {
+          Shared.track('invite_accept');
+          finish('Coffee confirmed', "You'll both get a calendar invite by email.", '✅');
+        }
+      });
+
+      document.getElementById('decline-btn').addEventListener('click', async () => {
+        if (await respond('decline')) {
+          finish('No worries', 'We let them know. Maybe another time.', '👋');
+        }
+      });
+
+      const proposeBtn = document.getElementById('propose-btn');
+      const proposeForm = document.getElementById('propose-form');
+      proposeBtn.addEventListener('click', () => {
+        proposeForm.classList.toggle('is-visible');
+      });
+
+      proposeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const date = document.getElementById('propose-date').value;
+        const time = document.getElementById('propose-time').value;
+        if (!date || !time) {
+          setMessage('Please choose a date and time.', 'is-error');
+          return;
+        }
+        const proposedStartsAt = new Date(`${date}T${time}`).toISOString();
+        if (await respond('propose', { proposed_starts_at: proposedStartsAt })) {
+          finish('Suggestion sent', "We'll let them know your new time — you'll hear back if they accept.", '📨');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

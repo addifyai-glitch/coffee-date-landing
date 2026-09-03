@@ -1,0 +1,19 @@
+{
+  "name": "pookie",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pookie — static frontend + Vercel serverless API (waitlist + coffee invites).",
+  "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "resend": "^4.0.1",
+    "ics": "^3.7.6",
+    "nanoid": "^5.0.7"
+  }
+}

@@ -1,134 +1,120 @@
-# Pookie — Two Experiences, One Codebase
+# Pookie
 
-A static, no-build-step site with two connected experiences sharing one premium design system:
+Meet for coffee. Actually meet.
 
-1. **Let's See If We Vibe** (`/`) — a confident, witty personal invitation page.
-2. **Pookie** (`/pookie/`) — an early-access marketing site and validation MVP for a social discovery platform, complete with a waitlist, a product-validation survey, an interactive demo, and a password-protected admin dashboard.
+A static HTML/CSS/JS frontend plus Vercel Serverless Functions in `/api`. Two flows:
 
-No frameworks, no bundler — plain HTML/CSS/JS that runs by opening the files or dropping the folder on any static host.
+1. **Coffee invite** — send someone a real invite (place, date, time). They get one email to accept, suggest another time, or decline — no account needed. Confirmed invites get a `.ics` calendar attachment, sent to both parties.
+2. **Waitlist** — email + double opt-in confirmation, with a referral system (each confirmed referral moves you up 5 spots).
+
+No framework, no build step for the frontend. The backend is Node 20 functions under `/api/**`, deployed by Vercel's zero-config detection. The browser never talks to the database or the email provider directly — every write goes through `/api/*`, authenticated with a service-role key that only server code ever sees.
 
 ## Project structure
 
 ```
-Coffee Date landing page/
-├── index.html              # Experience 1: "Let's See If We Vibe"
-├── vibe.js                 # Experience 1 logic (dodge button, plan form, WhatsApp)
-├── style.css                # Shared design system for the ENTIRE site
-├── common.js                 # Shared foundation: theme, nav/footer, cursor, FX, Supabase/EmailJS helpers, analytics
-├── config.js                 # <-- Fill in your Supabase / EmailJS / WhatsApp / Turnstile values here
-├── supabase-schema.sql       # Run once in Supabase — creates every table + RLS policy
-├── manifest.json / icon.svg
-├── README.md
-└── pookie/
-    ├── index.html            # Experience 2: hero, philosophy, features, Vibe Mode, demo, waitlist flow
-    ├── pookie.js             # Pookie page logic (demo stepper, waitlist multi-step form)
-    ├── about.html
-    ├── privacy.html
-    ├── terms.html
-    ├── contact.html
-    ├── faq.html
-    └── admin/
-        ├── index.html        # Password-gated analytics dashboard
-        └── admin.js
+├── index.html                 Homepage: hero, invite form, how-it-works, waitlist
+├── welcome.html                Post-confirmation page (rank, referral link, share)
+├── respond.html                 Invite recipient/sender response page
+├── about.html / contact.html / faq.html
+├── datenschutz.html / impressum.html   Placeholder legal pages — see below
+├── style.css                    Shared design system (café palette, Fraunces + Manrope)
+├── common.js                    Shared foundation: theme, nav/footer, cursor, FX, /api fetch helper
+├── app.js                       Homepage-specific interactions (forms, invite-preview card)
+├── robots.txt / sitemap.xml / manifest.json / icon.svg / og-image.png
+├── package.json                 @supabase/supabase-js, resend, ics, nanoid
+├── vercel.json                  Security headers
+├── supabase/
+│   └── schema.sql               Run once, manually, in the Supabase SQL editor
+└── api/
+    ├── _lib/
+    │   ├── supabase.js          Service-role client (throws if env vars missing)
+    │   ├── token.js              Signed HMAC tokens for email links (wl / inv / snd)
+    │   ├── ratelimit.js          5 requests / 10 min per endpoint + hashed IP
+    │   ├── validate.js           Email normalization, honeypot check
+    │   ├── ics.js                 .ics generation for confirmed invites
+    │   └── email.js               Resend wrapper + all 7 HTML email templates
+    ├── waitlist.js               POST — create signup, send confirm email
+    ├── waitlist/confirm.js       GET  — verify token, confirm, redirect to welcome.html
+    ├── invite.js                  POST create / GET fetch-by-token
+    ├── invite/respond.js          POST accept / decline / propose
+    └── admin/waitlist.js          GET — Basic Auth, JSON or ?format=csv
 ```
 
-The site works and looks complete with **zero configuration** — `config.js` ships blank, so Supabase, EmailJS, and Turnstile calls are all skipped quietly. The WhatsApp redirect on the invitation page already points at `+43 660 1128362`.
+## Env vars (Vercel → Project → Settings → Environment Variables)
 
-## How the pieces fit together
+Set these for **Production** and **Preview**.
 
-- **`style.css`** is the single shared stylesheet for both experiences, including light/dark theme variables, the glass-card system, nav/footer, feature cards, the Vibe Mode grid, the phone-mockup demo, the multi-step form stepper, and the admin dashboard's charts/tables.
-- **`common.js`** (loaded on every page) provides: dark/light theme toggle (persisted, respects system preference), the nav/footer markup (injected into `#site-nav` / `#site-footer` placeholders so it's written once, not copy-pasted across 8 HTML files), the glowing cursor, magnetic buttons, ambient particles, scroll-reveal, the canvas confetti/heart/sparkle system, thin Supabase REST helpers (insert/update using the public anon key), EmailJS helpers, an FAQ accordion helper, and the privacy-friendly page-view logger.
-- **`vibe.js`** and **`pookie/pookie.js`** hold only what's unique to each page.
-- **`pookie/admin/admin.js`** is the one place that uses the full `supabase-js` client library instead of the lightweight REST helpers, because reading data back requires an authenticated session (see below).
+| Variable | Value |
+|---|---|
+| `SUPABASE_URL` | From the new Supabase project → Settings → API |
+| `SUPABASE_SERVICE_ROLE_KEY` | Same page — **service_role** key, never the anon key |
+| `RESEND_API_KEY` | From resend.com → API Keys |
+| `FROM_EMAIL` | `Pookie <hello@mail.addify.ae>` |
+| `REPLY_TO` | `irfan@addify.ae` |
+| `SITE_URL` | `https://pookie.addify.ae` |
+| `TOKEN_SECRET` | 32+ random bytes, base64 — e.g. `openssl rand -base64 32` |
+| `IP_SALT` | Any random string — e.g. `openssl rand -hex 16` |
+| `ADMIN_USER` | Your choice — used for Basic Auth on `/api/admin/waitlist` |
+| `ADMIN_PASS` | Your choice — a strong password |
+| `TEST_EMAIL_2` | A second inbox you control, used only for the proof-by-query steps |
+| `PLAUSIBLE_DOMAIN` | `pookie.addify.ae` (documentation only — the frontend hardcodes this domain and self-gates on `location.hostname`, since there's no build step to inject env vars into static HTML) |
+
+None of these are ever referenced in client-side code — only inside `/api/**`.
 
 ## Setting up Supabase
 
-1. Create a free project at [supabase.com](https://supabase.com).
-2. Open **SQL Editor → New query**, paste the contents of `supabase-schema.sql`, and run it. This creates four tables — `responses`, `waitlist_signups`, `demo_events`, `page_views` — each with row-level security so the public site can only **insert** data (plus a narrow update policy on `waitlist_signups` so the multi-step form can fill in later steps of the same row). Nothing can be read back by anonymous visitors.
-3. Go to **Settings → API** and copy the **Project URL** and the **anon public key** into `config.js`:
-   ```js
-   SUPABASE_URL: 'https://xxxxxxxxxxxx.supabase.co',
-   SUPABASE_ANON_KEY: 'eyJhbGciOi...',
-   ```
-4. **Create your one admin account** (required for the dashboard): go to **Authentication → Users → Add user**, and create yourself an email/password. Then go to **Authentication → Settings** and make sure **"Allow new user signups"** is turned **off** — the site never exposes a public sign-up form, and the dashboard's read access is granted to *any* authenticated user, so this setting is what keeps that safe. The admin login screen at `/pookie/admin/` uses this account.
+1. Create a **new, isolated** Supabase project (not shared with any other project) — EU/Frankfurt region.
+2. Project → SQL Editor → New query → paste the full contents of `supabase/schema.sql` → run it. This creates `waitlist`, `invites`, and `rate_limits`, all with row-level security enabled and **no policies** — anon and authenticated both get zero access. The only way in is the service-role key, used exclusively inside `/api/**`.
+3. Settings → API → copy the **Project URL** and the **service_role** key (not anon) into `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`.
 
-## Setting up EmailJS (optional)
+## Setting up Resend
 
-1. Create a free account at [emailjs.com](https://www.emailjs.com) and add an **Email Service**.
-2. Create **four templates** (two per experience), using these variable names:
-   - **Vibe owner / visitor templates** (`EMAILJS_OWNER_TEMPLATE_ID` / `EMAILJS_VISITOR_TEMPLATE_ID`): `{{name}}`, `{{email}}`, `{{phone}}`, `{{activity}}`, `{{date}}`, `{{time}}`, `{{city}}`, `{{message}}`.
-   - **Waitlist owner / visitor templates** (`EMAILJS_WAITLIST_OWNER_TEMPLATE_ID` / `EMAILJS_WAITLIST_VISITOR_TEMPLATE_ID`): `{{name}}`, `{{email}}`, `{{country}}`, `{{would_use}}`, `{{name_opinion}}`.
-   - For visitor-facing templates, set the template's "To email" field to `{{email}}`.
-3. Copy your **Public Key** (Account → General) and all four template IDs into `config.js`. Any left blank simply won't send — the form still completes normally.
+1. Create a Resend account, add the sending domain used in `FROM_EMAIL` (e.g. `mail.addify.ae`).
+2. Resend will give you DNS records to add at your domain registrar (exact values are generated per-domain in the Resend dashboard — typically an **MX** record, a **TXT** record for SPF, and a **CNAME**/**TXT** pair for DKIM). Add all of them, then click "Verify" in Resend — this can take a few minutes to propagate.
+3. Copy the API key into `RESEND_API_KEY`.
+4. Either add the Vercel↔Resend integration from the Vercel dashboard (Integrations → Resend) which can set `RESEND_API_KEY` for you, or paste the key in manually — both work.
 
-## WhatsApp confirmation
+## Deploy
 
-`config.js` has `WHATSAPP_NUMBER: '436601128362'` (digits only, country code first). On the Vibe page, confirming a plan opens `https://wa.me/436601128362?text=...` with a pre-filled message. This is specific to the personal invitation flow — the Pookie waitlist doesn't use WhatsApp.
+```bash
+npm install
+npx vercel link      # new project, scope addifyai-glitch — confirm it's not addify1/ict-portfolio
+# … add the env vars above + the Resend integration + the pookie.addify.ae domain
+#    in the Vercel dashboard …
+npx vercel env pull  # to test the API locally with `vercel dev`, optional
+npx vercel --prod
+```
 
-## Spam protection (optional)
+Then point `pookie.addify.ae` at Vercel (Vercel dashboard → Domains → add `pookie.addify.ae`, then add the DNS record it gives you at your registrar) and confirm it resolves with valid SSL — Vercel provisions the certificate automatically once DNS is correct.
 
-The waitlist form supports [Cloudflare Turnstile](https://dash.cloudflare.com) out of the box. Create a Turnstile site key for your domain, paste it into `config.js` as `TURNSTILE_SITE_KEY`, and the widget appears automatically on `/pookie/#waitlist` and blocks submission until solved. Leave it blank to skip spam protection entirely.
+## Exporting the waitlist
 
-## Analytics
+```
+curl -u "$ADMIN_USER:$ADMIN_PASS" "https://pookie.addify.ae/api/admin/waitlist?format=csv" -o waitlist.csv
+```
 
-Page views are logged into the `page_views` table with a random ID stored in `localStorage` — no cookies, no third-party trackers. "Total page views" and "unique visitors" (by that random ID) show up on the admin dashboard. This is approximate (no cross-device dedup) but requires no extra account. If you'd rather not run your own analytics table, your hosting provider's free built-in analytics (Netlify Analytics, Vercel Analytics, Cloudflare Web Analytics) works too — `Shared.logPageView()` calls are harmless no-ops if Supabase isn't configured.
+Drop `?format=csv` for a JSON response instead — `{ count, counts_by_source, counts_by_city, rows }`.
 
-## The admin dashboard
+## Legal pages
 
-Visit `/pookie/admin/` and sign in with the one account you created in Supabase Auth. It shows:
+`datenschutz.html` and `impressum.html` are **placeholder text only**, clearly marked as such in the page itself. They are not a substitute for real legal review under the GDPR/DSGVO, the Austrian DSG, or the ECG — replace the content (including the placeholder address in `impressum.html`) before treating this as a live product.
 
-- Total page views, unique visitors, invitation confirmations, waitlist size
-- Would-you-use-this breakdown, name-preference breakdown, most-selected activities, most-selected Vibes, countries, age distribution, most-requested features, willingness to pay
-- Free-text concerns and suggestions
-- Recent waitlist signups and invitation confirmations, plus a CSV export of the waitlist
+## Rate limiting & abuse prevention
 
-This works because every table's row-level security grants **read** access to the `authenticated` role — which is safe only because there's no public sign-up form anywhere on the site (see step 4 of the Supabase setup above). Don't add one.
+- 5 requests per 10-minute window, per endpoint + hashed visitor IP (`rate_limits` table).
+- A hidden honeypot field (`website`) on both forms — a filled-in value returns a fake success and does nothing.
+- Signed, expiring tokens for every email link (7 days for waitlist confirmation, 14 days for invite responses) — tampered or expired tokens are rejected server-side.
 
 ## Running locally
 
-No build step required.
+The frontend is static and can be served with any file server:
 
 ```bash
 npx serve .
-# or
-python3 -m http.server 8000
 ```
 
-Then visit `http://localhost:8000/` for the Vibe page or `http://localhost:8000/pookie/` for Pookie.
+To exercise `/api/*` locally, use the Vercel CLI (requires `vercel link` + env vars pulled first):
 
-## Deployment
-
-### GitHub Pages
-
-1. Push this folder's contents to a GitHub repository's `main` branch.
-2. **Settings → Pages** → Source: `Deploy from a branch`, branch `main`, folder `/ (root)`.
-3. Live at `https://<username>.github.io/<repo>/`. Because the site uses relative links throughout (`pookie/`, `../`, etc.), it works whether it's served from the domain root or a GitHub Pages project subpath.
-
-### Netlify
-
-Drag the folder onto **app.netlify.com → Add new site → Deploy manually**, or:
 ```bash
-npm install -g netlify-cli
-netlify deploy --prod
+npx vercel dev
 ```
-
-### Vercel
-
-Import the folder at [vercel.com/new](https://vercel.com/new) as a static project (no build command, output directory `.`), or:
-```bash
-npm install -g vercel
-vercel --prod
-```
-
-### Cloudflare Pages
-
-**Workers & Pages → Create → Pages → Upload assets**, leave the build command empty, output directory `/`.
-
-All four options serve static files as-is, provision free HTTPS automatically, and need no environment variables — Supabase/EmailJS/Turnstile calls happen client-side using the public keys already in `config.js`.
-
-## Security notes
-
-- The Supabase **anon** key and EmailJS **public** key are meant to be exposed client-side — they can only do what their respective service's security rules allow (insert-only RLS policies; EmailJS's own rate limits).
-- Never put a Supabase **service role** key in any client-side file.
-- The admin dashboard's security comes entirely from row-level security plus keeping public sign-ups disabled in Supabase Auth — not from hiding the `/pookie/admin/` URL.
-- If you'd rather not wire up a backend at all, leave `config.js` blank — both experiences still work end-to-end, minus persistence, email notifications, and the admin dashboard (which will show a config warning instead of a login form).
