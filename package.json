@@ -7,9 +7,6 @@
   "engines": {
     "node": "20.x"
   },
-  "scripts": {
-    "dev": "vercel dev"
-  },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
     "resend": "^4.0.1",
