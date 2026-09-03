@@ -1,29 +1,30 @@
 # Pookie
 
-Meet for coffee. Actually meet.
+Meet people. Create moments.
 
-A static HTML/CSS/JS frontend plus Vercel Serverless Functions in `/api`. Two coexisting experiences:
+A static HTML/CSS/JS frontend plus Vercel Serverless Functions in `/api`. One shared design system (the original pink/purple look), two experiences:
 
-**The Pookie product** (`/`) — a café-themed landing page with two flows:
-1. **Coffee invite** — send someone a real invite (place, date, time). They get one email to accept, suggest another time, or decline — no account needed. Confirmed invites get a `.ics` calendar attachment, sent to both parties.
-2. **Waitlist** — email + double opt-in confirmation, with a referral system (each confirmed referral moves you up 5 spots).
+**Pookie** (`/`) — the marketing site and product pitch: brand philosophy, a 16-feature roadmap grid, the "Vibe Mode" concept preview, and an interactive phone-mockup walkthrough. Two things on the page are real, not mockups:
+1. **Send an invite** (`#invite`) — a working, public invite tool. Anyone can send anyone a real invite (place, date, time); the recipient gets one email to accept, suggest another time, or decline — no account needed on either side. Confirmed invites get a `.ics` calendar attachment, emailed to both parties. Free, with a fair rate limit to keep it spam-free.
+2. **Waitlist** (`#waitlist`) — email + double opt-in confirmation, with a referral system (each confirmed referral moves you up 5 spots).
 
-**"Let's See If We Vibe"** (`/vibe.html`) — the original personal-invitation easter egg (pink/purple, dodge-button, the works), preserved from before the SPEC.md rebuild and kept running alongside the new product. It uses its own stylesheet (`vibe.css`) so the two designs never bleed into each other, but posts through the same server-side backend as everything else (`/api/vibe`) instead of the original's client-side Supabase/EmailJS calls.
+**"Let's See If We Vibe"** (`/vibe.html`) — the original personal-invitation easter egg (dodge-button, the works), preserved as a second, coexisting page.
 
 No framework, no build step for the frontend. The backend is Node 20 functions under `/api/**`, deployed by Vercel's zero-config detection. The browser never talks to the database or the email provider directly — every write goes through `/api/*`, authenticated with a service-role key that only server code ever sees.
 
 ## Project structure
 
 ```
-├── index.html                 Homepage: hero, invite form, how-it-works, waitlist
+├── index.html                 Pookie homepage: hero, philosophy, features, Vibe Mode,
+│                               demo walkthrough, real invite form, waitlist
 ├── welcome.html                Post-confirmation page (rank, referral link, share)
 ├── respond.html                 Invite recipient/sender response page
-├── about.html / contact.html / faq.html
-├── datenschutz.html / impressum.html   Placeholder legal pages — see below
-├── vibe.html / vibe.css / vibe.js   "Let's See If We Vibe" — the restored original page
-├── style.css                    Shared design system (café palette, Fraunces + Manrope)
+├── about.html / contact.html / faq.html / privacy.html / terms.html
+├── datenschutz.html / impressum.html   Placeholder Austria-specific legal pages — see below
+├── vibe.html / vibe.js         "Let's See If We Vibe" — the original page, restored
+├── style.css                    Shared design system (used by every page, including vibe.html)
 ├── common.js                    Shared foundation: theme, nav/footer, cursor, FX, /api fetch helper
-├── app.js                       Homepage-specific interactions (forms, invite-preview card)
+├── app.js                       Homepage-specific interactions (forms, Vibe Mode grid, demo stepper)
 ├── robots.txt / sitemap.xml / manifest.json / icon.svg / og-image.png
 ├── package.json                 @supabase/supabase-js, resend, ics, nanoid
 ├── vercel.json                  Security headers
@@ -102,13 +103,13 @@ Drop `?format=csv` for a JSON response instead — `{ count, counts_by_source, c
 
 ## Legal pages
 
-`datenschutz.html` and `impressum.html` are **placeholder text only**, clearly marked as such in the page itself. They are not a substitute for real legal review under the GDPR/DSGVO, the Austrian DSG, or the ECG — replace the content (including the placeholder address in `impressum.html`) before treating this as a live product.
+`privacy.html` and `terms.html` are the plain-language policies linked from every page's footer. `datenschutz.html` and `impressum.html` are additional, **placeholder-text-only** Austria-specific pages (GDPR/DSGVO, ECG), clearly marked as such in the page itself — replace the content (including the placeholder address in `impressum.html`) before treating this as a live product.
 
 ## Rate limiting & abuse prevention
 
-- 5 requests per 10-minute window, per endpoint + hashed visitor IP (`rate_limits` table).
-- A hidden honeypot field (`website`) on both forms — a filled-in value returns a fake success and does nothing.
-- Signed, expiring tokens for every email link (7 days for waitlist confirmation, 14 days for invite responses) — tampered or expired tokens are rejected server-side.
+- 5 requests per 10-minute window, per endpoint + hashed visitor IP (`rate_limits` table) — applies to the invite form, the waitlist, and `/vibe.html`'s form alike.
+- A hidden honeypot field (`website`) on every form — a filled-in value returns a fake success and does nothing.
+- Signed, expiring tokens for every email link (7 days for waitlist confirmation, 14 days for invite responses) — tampered or expired tokens are rejected server-side with a proper `500` if the server itself is misconfigured, rather than a misleading "invalid link".
 
 ## Running locally
 

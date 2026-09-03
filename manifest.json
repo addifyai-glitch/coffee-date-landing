@@ -1,12 +1,12 @@
 {
   "name": "Pookie",
   "short_name": "Pookie",
-  "description": "Meet for coffee. Actually meet. Send a real invite, or join the waitlist.",
+  "description": "Meet people. Create moments. Let chemistry do the rest.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#F4EBDD",
-  "theme_color": "#C8552D",
+  "background_color": "#fdf1f5",
+  "theme_color": "#c96bd8",
   "icons": [
     {
       "src": "icon.svg",

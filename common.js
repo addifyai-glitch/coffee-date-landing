@@ -50,7 +50,9 @@ const Shared = (() => {
   /* ---------------- Nav + footer injection ---------------- */
 
   const NAV_LINKS = [
-    { label: 'How it works', href: '/#how-it-works' },
+    { label: 'Philosophy', href: '/#philosophy' },
+    { label: 'Features', href: '/#features' },
+    { label: 'Vibe Mode', href: '/#vibe-mode' },
     { label: 'Invite someone', href: '/#invite' },
     { label: 'Waitlist', href: '/#waitlist' },
     { label: 'FAQ', href: '/faq.html' },
@@ -62,7 +64,7 @@ const Shared = (() => {
       // a single link back to the main Pookie product.
       return `
         <a href="/vibe.html" class="nav-brand"><span aria-hidden="true">😎</span> Let's Vibe</a>
-        <ul class="nav-links"><li><a href="/">Pookie ✨</a></li></ul>
+        <ul class="nav-links"><li><a href="/">Pookie 💗</a></li></ul>
         <div class="nav-actions">
           <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
         </div>
@@ -70,7 +72,7 @@ const Shared = (() => {
     }
     const linksHtml = NAV_LINKS.map((l) => `<li><a href="${l.href}">${l.label}</a></li>`).join('');
     return `
-      <a href="/" class="nav-brand"><span aria-hidden="true">☕</span> Pookie</a>
+      <a href="/" class="nav-brand"><span aria-hidden="true">💗</span> Pookie</a>
       <ul class="nav-links">${linksHtml}</ul>
       <div class="nav-actions">
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
@@ -80,17 +82,20 @@ const Shared = (() => {
   };
 
   const buildFooter = () => `
-    <p class="footer-tagline">Pookie ☕</p>
-    <p class="footer-sub">Meet for coffee. Actually meet.</p>
+    <p class="footer-tagline">Built with ❤️ — Currently in Early Access</p>
+    <p class="footer-sub">Help shape the future of real-world social discovery. Good vibes only.</p>
     <ul class="footer-links">
       <li><a href="/about.html">About</a></li>
       <li><a href="/faq.html">FAQ</a></li>
       <li><a href="/contact.html">Contact</a></li>
+      <li><a href="/privacy.html">Privacy</a></li>
+      <li><a href="/terms.html">Terms</a></li>
       <li><a href="/datenschutz.html">Datenschutz</a></li>
       <li><a href="/impressum.html">Impressum</a></li>
+      <li><a href="/#waitlist">Waitlist</a></li>
       <li><a href="/vibe.html">Let's Vibe 😎</a></li>
     </ul>
-    <p class="footer-credit">© <span id="footer-year"></span> Pookie. Made for real meetups, not endless scrolling.</p>
+    <p class="footer-credit">© <span id="footer-year"></span> Pookie Labs. Made for humans, not algorithms.</p>
   `;
 
   const initChrome = (opts = {}) => {

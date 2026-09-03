@@ -4,20 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>FAQ — Pookie</title>
-  <meta name="description" content="Answers to common questions about Pookie, the coffee invite flow, the waitlist, and privacy." />
-  <meta name="theme-color" content="#C8552D" />
+  <meta name="description" content="Answers to common questions about Pookie, our early-access phase, privacy, and how the waitlist and invite feature work." />
+  <meta name="theme-color" content="#c96bd8" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="FAQ — Pookie" />
-  <meta property="og:description" content="Answers to common questions about Pookie, the coffee invite flow, the waitlist, and privacy." />
+  <meta property="og:description" content="Answers to common questions about Pookie, our early-access phase, privacy, and how the waitlist and invite feature work." />
   <meta property="og:image" content="https://pookie.addify.ae/og-image.png" />
   <link rel="icon" type="image/svg+xml" href="/icon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <div class="bg-layer" aria-hidden="true"><div class="grain"></div></div>
+  <div class="bg-layer" aria-hidden="true">
+    <div class="aurora"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="grain"></div>
+  </div>
+
   <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
 
   <nav class="site-nav" id="site-nav"></nav>
@@ -28,37 +35,47 @@
     <div>
       <div class="faq-item">
         <div class="faq-question">What is Pookie? <span class="faq-caret">⌄</span></div>
-        <div class="faq-answer"><p>Pookie is a simple way to turn "we should meet up" into an actual plan. Send someone a real invite — a place, a date, a time — and they get one email to accept, suggest another time, or decline. No swiping, no account required for them to respond.</p></div>
+        <div class="faq-answer"><p>Pookie is a modern social discovery platform built around real-world connection. Instead of optimizing for endless messaging, it's designed to help people meet sooner, share real experiences, and let chemistry play out in person rather than through a screen.</p></div>
       </div>
 
       <div class="faq-item">
         <div class="faq-question">Is this a dating app? <span class="faq-caret">⌄</span></div>
-        <div class="faq-answer"><p>Not really — there are no profiles to browse and no matching. It's a lightweight invite tool: useful for a date, a catch-up with a friend, or a networking coffee. What it's "for" is up to you and the person you invite.</p></div>
+        <div class="faq-answer"><p>Not in the traditional sense. Dating apps are usually built around swiping through profiles and chatting indefinitely. Pookie is built around discovery and shared moments — it's for meeting people and creating real experiences, whatever form that connection ends up taking.</p></div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">Does the person I invite need an account? <span class="faq-caret">⌄</span></div>
-        <div class="faq-answer"><p>No. They just click accept, suggest another time, or decline from the email — nothing to sign up for.</p></div>
+        <div class="faq-question">What is "Vibe Mode" and how is it different from a permanent profile label? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Vibe Mode lets you signal the kind of energy you're open to right now — casual, adventurous, low-key, ready to make plans — instead of locking you into one fixed category forever. People change day to day, and we think the app should reflect that instead of flattening you into a static label.</p></div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">What happens once an invite is accepted? <span class="faq-caret">⌄</span></div>
-        <div class="faq-answer"><p>Both of you get an email confirming the details, with a calendar file (.ics) attached so it's one tap to add to your calendar.</p></div>
+        <div class="faq-question">Is the invite feature real, or just a demo? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>It's real. Send someone an invite from the homepage and they'll actually get an email with a place, date, and time — they can accept, suggest another time, or decline, no account needed on either side. It's free to use, with a fair rate limit to keep it spam-free.</p></div>
       </div>
 
       <div class="faq-item">
         <div class="faq-question">Is my data safe? Who can see what I submit? <span class="faq-caret">⌄</span></div>
-        <div class="faq-answer"><p>The site never talks to the database directly. Every signup and invite goes through a server that validates and stores it in a database with no public read access at all — not even to a logged-in visitor. Only we can read it, through a private, authenticated tool. See our <a href="/datenschutz.html">privacy policy</a> for details.</p></div>
+        <div class="faq-answer"><p>Your information is stored in a database with no public read access at all — the site itself can never read, list, or export it back out, only insert new submissions through a validating server. Only we can view it, and only through a private, authenticated tool. See our <a href="/privacy.html">privacy policy</a> for full details.</p></div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-question">What's the waitlist for? <span class="faq-caret">⌄</span></div>
-        <div class="faq-answer"><p>We're building past the invite flow into a fuller product, and the waitlist is how we decide what to build next and who hears about it first. Joining moves you up 5 spots for every friend you refer.</p></div>
+        <div class="faq-question">Is Pookie live yet? When can I use the full app?  <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>The invite feature is live today. The rest of the product — Meet Mode, Nearby Discovery, the full Vibe Mode experience — is still in early access, being validated before we build it. Joining the waitlist is the best way to hear first if and when that changes.</p></div>
       </div>
 
       <div class="faq-item">
         <div class="faq-question">Do I need to pay anything right now? <span class="faq-caret">⌄</span></div>
-        <div class="faq-answer"><p>No. The invite flow and the waitlist are both free during early access.</p></div>
+        <div class="faq-answer"><p>No. Everything on this site — the waitlist and the invite feature — is free during this early-access phase. We're not charging for anything.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">What happens after I join the waitlist? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>We'll email you to confirm your spot, then keep your details on file so we can reach out as things develop. Joining doesn't obligate you to anything, and you can ask us to delete your data at any time. Referring friends with your personal link moves you up the list.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Can I suggest a different name than "Pookie"? <span class="faq-caret">⌄</span></div>
+        <div class="faq-answer"><p>Please do. We know the name is a little unconventional, and we're genuinely open to hearing your take — email us any time.</p></div>
       </div>
 
       <div class="faq-item">
@@ -68,7 +85,7 @@
 
       <div class="faq-item">
         <div class="faq-question">Can I delete my data? <span class="faq-caret">⌄</span></div>
-        <div class="faq-answer"><p>Yes, any time and with no questions asked. Email <a href="mailto:irfan@addify.ae">irfan@addify.ae</a> with the details you submitted (or the email address you used), and we'll remove them.</p></div>
+        <div class="faq-answer"><p>Yes, any time and with no questions asked. Just email <a href="mailto:irfan@addify.ae">irfan@addify.ae</a> with the details you submitted, and we'll remove them.</p></div>
       </div>
     </div>
   </main>

@@ -21,6 +21,16 @@
     <priority>0.4</priority>
   </url>
   <url>
+    <loc>https://pookie.addify.ae/privacy.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://pookie.addify.ae/terms.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
     <loc>https://pookie.addify.ae/datenschutz.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.2</priority>

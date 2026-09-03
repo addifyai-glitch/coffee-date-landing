@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Pookie — Meet for coffee. Actually meet.</title>
-  <meta name="description" content="Skip the endless chat. Send someone a real coffee invite — they accept, suggest another time, or decline by email, no account needed — or join the waitlist for what's next." />
-  <meta name="theme-color" content="#C8552D" />
+  <title>Pookie — Meet people. Create moments.</title>
+  <meta name="description" content="Less endless swiping. More unforgettable moments. Pookie is a social discovery platform for meeting interesting people in real life, built around shared experiences instead of profiles." />
+  <meta name="theme-color" content="#c96bd8" />
   <link rel="manifest" href="/manifest.json" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Pookie — Meet for coffee. Actually meet." />
-  <meta property="og:description" content="Send a real coffee invite in two minutes. They accept, suggest another time, or decline by email — no account needed." />
+  <meta property="og:title" content="Pookie — Meet people. Create moments." />
+  <meta property="og:description" content="Less endless swiping. More unforgettable moments. Let chemistry do the rest." />
   <meta property="og:image" content="https://pookie.addify.ae/og-image.png" />
   <meta property="og:url" content="https://pookie.addify.ae/" />
 
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Pookie — Meet for coffee. Actually meet." />
-  <meta name="twitter:description" content="Send a real coffee invite in two minutes. No swiping, no endless chat." />
+  <meta name="twitter:title" content="Pookie — Meet people. Create moments." />
+  <meta name="twitter:description" content="A social discovery platform built around real-world moments, not profiles." />
   <meta name="twitter:image" content="https://pookie.addify.ae/og-image.png" />
 
   <link rel="icon" type="image/svg+xml" href="/icon.svg" />
@@ -27,20 +27,24 @@
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Pookie",
-    "description": "Send a real coffee invite, or join the waitlist for what's next.",
-    "slogan": "Meet for coffee. Actually meet."
+    "description": "A social discovery platform for meeting people and creating real-world moments.",
+    "slogan": "Meet people. Create moments. Let chemistry do the rest."
   }
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
 
   <div class="bg-layer" aria-hidden="true">
+    <div class="aurora"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
     <div class="grain"></div>
     <div id="particles" class="particles-layer"></div>
   </div>
@@ -52,41 +56,230 @@
   <main>
 
     <!-- ================= HERO ================= -->
-    <section class="hero section">
-      <div class="hero-copy">
-        <p class="hero-eyebrow reveal in-view">Now in early access</p>
-        <h1 class="hero-title reveal in-view">Meet for coffee.<br /><span class="accent">Actually meet.</span></h1>
-        <p class="hero-sub reveal in-view">Skip the endless chat. Send someone a real invite — they accept, suggest another time, or decline by email. No account needed.</p>
-        <div class="hero-cta-row reveal in-view">
-          <a href="#invite" class="btn btn-primary magnetic">Send an invite ☕</a>
-          <a href="#waitlist" class="btn btn-ghost magnetic">Join the waitlist</a>
-        </div>
+    <section class="section pookie-hero section-center">
+      <p class="section-eyebrow reveal in-view">Now in early access</p>
+      <h1 class="section-title reveal in-view">Less endless swiping.<br /><span class="text-gradient">More unforgettable moments.</span></h1>
+      <p class="section-sub reveal in-view">We spend hours matching online. What if we simply met interesting people in real life instead?</p>
+      <div class="hero-cta-row reveal in-view">
+        <a href="#invite" class="btn btn-primary magnetic">Send an invite ✨</a>
+        <a href="#waitlist" class="btn btn-ghost magnetic">Join the waitlist</a>
       </div>
+    </section>
 
-      <div class="invite-preview-wrap reveal in-view">
-        <div class="invite-preview" id="invite-preview">
-          <p class="invite-preview-eyebrow">Coffee invite</p>
-          <div class="invite-preview-row">
-            <div class="invite-preview-avatar" aria-hidden="true">🙂</div>
-            <div>
-              <div class="invite-preview-name">You → Alex</div>
-              <div class="invite-preview-meta">Friday, 5:00 PM</div>
-            </div>
+    <!-- ================= PHILOSOPHY ================= -->
+    <section class="section section-narrow" id="philosophy">
+      <p class="section-eyebrow reveal">Brand philosophy</p>
+      <h2 class="section-title reveal">What we believe</h2>
+      <div class="philosophy-list mt-lg">
+        <div class="philosophy-item reveal">
+          <span class="philosophy-index">01</span>
+          <div>
+            <h3 class="philosophy-title">Moments, not profiles</h3>
+            <p class="philosophy-text">People connect through shared moments — a laugh, a shared table, a walk that runs long. A profile can describe someone. It can't replace actually spending time with them.</p>
           </div>
-          <div class="invite-preview-details">
-            <div>📍 Café Central, Vienna</div>
-            <div>💬 "Been meaning to catch up — coffee this week?"</div>
+        </div>
+        <div class="philosophy-item reveal">
+          <span class="philosophy-index">02</span>
+          <div>
+            <h3 class="philosophy-title">Chemistry can't be predicted</h3>
+            <p class="philosophy-text">No algorithm can tell you if you'll click with someone. It can only be experienced, in person, in real time. We optimize for getting you there faster — not for keeping you scrolling.</p>
           </div>
-          <div class="invite-preview-status">Waiting for a reply</div>
+        </div>
+        <div class="philosophy-item reveal">
+          <span class="philosophy-index">03</span>
+          <div>
+            <h3 class="philosophy-title">Meet sooner. Chat less.</h3>
+            <p class="philosophy-text">Weeks of messaging before a first meeting rarely tells you more than the first ten minutes together does. We're built to shorten the distance between "matched" and "meeting."</p>
+          </div>
+        </div>
+        <div class="philosophy-item reveal">
+          <span class="philosophy-index">04</span>
+          <div>
+            <h3 class="philosophy-title">Privacy and safety, non-negotiable</h3>
+            <p class="philosophy-text">Your exact location, contact details, and personal data stay yours by default. Meeting new people in real life should never mean giving up control over your own information.</p>
+          </div>
+        </div>
+        <div class="philosophy-item reveal">
+          <span class="philosophy-index">05</span>
+          <div>
+            <h3 class="philosophy-title">AI assists. You decide.</h3>
+            <p class="philosophy-text">AI works quietly in the background — surfacing compatibility, flagging safety concerns, reducing noise. It never chooses for you, and it never talks to people on your behalf.</p>
+          </div>
+        </div>
+        <div class="philosophy-item reveal">
+          <span class="philosophy-index">06</span>
+          <div>
+            <h3 class="philosophy-title">Trust before features</h3>
+            <p class="philosophy-text">It's tempting to ship every clever feature at once. We'd rather earn trust first — and build the features that deserve it, based on what real people actually tell us they need.</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ================= INVITE FORM ================= -->
+    <!-- ================= FEATURES ================= -->
+    <section class="section" id="features">
+      <p class="section-eyebrow reveal">What's inside</p>
+      <h2 class="section-title reveal">Built for real connection</h2>
+      <p class="section-sub reveal">Every feature exists to get you from "curious" to "meeting up" — safely, and on your terms. The invite feature below is real and working today; the rest is the roadmap we're validating with the waitlist.</p>
+
+      <div class="feature-grid mt-lg">
+        <div class="feature-card reveal"><span class="feature-icon">🤝</span><h3 class="feature-title">Meet Mode</h3><p class="feature-text">Turn it on when you're actually free to meet up — not just free to chat.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">📍</span><h3 class="feature-title">Nearby Discovery</h3><p class="feature-text">See compatible people who happen to be nearby right now, not just anywhere on a map.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">🏙️</span><h3 class="feature-title">Venue Mode</h3><p class="feature-text">Check into a café, bar, or event and see who else there is open to meeting.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">🎯</span><h3 class="feature-title">Activity Matching</h3><p class="feature-text">Match on what you want to do together, not just who you want to talk to.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">🌈</span><h3 class="feature-title">Mood Matching</h3><p class="feature-text">Vibe Mode surfaces people who are in the same headspace as you, today.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">🔒</span><h3 class="feature-title">Privacy First</h3><p class="feature-text">Your exact location, contact info, and data stay yours until you choose to share them.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">🛡️</span><h3 class="feature-title">AI Safety</h3><p class="feature-text">Background safety checks that flag risk — without ever making decisions for you.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">✅</span><h3 class="feature-title">Verified Profiles</h3><p class="feature-text">Real people, verified — so you're meeting who you think you're meeting.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">🌱</span><h3 class="feature-title">Optional Slow Dating</h3><p class="feature-text">Prefer to take it slow? Turn off urgency entirely and connect at your own pace.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">🧑‍🤝‍🧑</span><h3 class="feature-title">Friendships</h3><p class="feature-text">Not everyone is looking for romance. Meet people who just want good company.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">💼</span><h3 class="feature-title">Networking</h3><p class="feature-text">Find people in your industry or interests for a coffee that's actually useful.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">🎫</span><h3 class="feature-title">Events</h3><p class="feature-text">Discover local events other compatible people are already planning to attend.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">☕</span><h3 class="feature-title">Coffee Mode</h3><p class="feature-text">The lowest-pressure way to meet — one coffee, thirty minutes, zero commitment.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">🎪</span><h3 class="feature-title">Festival Mode</h3><p class="feature-text">Find your people at festivals, gigs, and pop-up events happening around you.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">✈️</span><h3 class="feature-title">Travel Buddy</h3><p class="feature-text">Landing somewhere new? Meet locals and fellow travelers who want company too.</p></div>
+        <div class="feature-card reveal"><span class="feature-icon">👯</span><h3 class="feature-title">Group Meetups</h3><p class="feature-text">Skip the one-on-one pressure entirely and meet as a small group instead.</p></div>
+      </div>
+    </section>
+
+    <!-- ================= VIBE MODE ================= -->
+    <section class="section section-narrow" id="vibe-mode">
+      <div class="vibe-callout reveal">
+        <p class="section-eyebrow">The signature feature</p>
+        <h2 class="section-title">What's your vibe today?</h2>
+        <p class="section-sub">Instead of asking you to permanently label what you're "looking for," Pookie asks a simpler, lower-pressure question every time you open the app: what are you in the mood for, right now?</p>
+
+        <div class="vibe-grid" id="vibe-grid">
+          <button class="vibe-chip" data-vibe="Coffee & Conversation" type="button"><span class="vibe-chip-emoji">☕</span><span class="vibe-chip-label">Coffee & Conversation</span></button>
+          <button class="vibe-chip" data-vibe="Drinks After Work" type="button"><span class="vibe-chip-emoji">🍸</span><span class="vibe-chip-label">Drinks After Work</span></button>
+          <button class="vibe-chip" data-vibe="Live Music" type="button"><span class="vibe-chip-emoji">🎵</span><span class="vibe-chip-label">Live Music</span></button>
+          <button class="vibe-chip" data-vibe="Sunset Walk" type="button"><span class="vibe-chip-emoji">🌅</span><span class="vibe-chip-label">Sunset Walk</span></button>
+          <button class="vibe-chip" data-vibe="Food Adventure" type="button"><span class="vibe-chip-emoji">🍕</span><span class="vibe-chip-label">Food Adventure</span></button>
+          <button class="vibe-chip" data-vibe="Festival Buddy" type="button"><span class="vibe-chip-emoji">🎪</span><span class="vibe-chip-label">Festival Buddy</span></button>
+          <button class="vibe-chip" data-vibe="Surprise Me" type="button"><span class="vibe-chip-emoji">🎲</span><span class="vibe-chip-label">Surprise Me</span></button>
+          <button class="vibe-chip" data-vibe="Networking" type="button"><span class="vibe-chip-emoji">🤝</span><span class="vibe-chip-label">Networking</span></button>
+          <button class="vibe-chip" data-vibe="Friendship" type="button"><span class="vibe-chip-emoji">🧑‍🤝‍🧑</span><span class="vibe-chip-label">Friendship</span></button>
+          <button class="vibe-chip" data-vibe="Dating" type="button"><span class="vibe-chip-emoji">💘</span><span class="vibe-chip-label">Dating</span></button>
+          <button class="vibe-chip" data-vibe="Just Browsing" type="button"><span class="vibe-chip-emoji">🚫</span><span class="vibe-chip-label">Just Browsing</span></button>
+        </div>
+
+        <p class="vibe-why">Try tapping one — it's a real, working preview of the interaction. Permanent labels like "looking for a relationship" force a decision you might not have made yet, and rarely change once set. A daily Vibe removes that pressure: it's honest about the fact that people want different things on different days, and it naturally connects you with others in the same headspace right now — nothing more, nothing less.</p>
+      </div>
+    </section>
+
+    <!-- ================= INTERACTIVE DEMO ================= -->
+    <section class="section" id="demo">
+      <p class="section-eyebrow reveal">Not a real app yet — a preview</p>
+      <h2 class="section-title reveal">Here's how it would work</h2>
+      <p class="section-sub reveal">A realistic walkthrough of the core flow, from opening the app to actually meeting up.</p>
+
+      <div class="demo-wrap reveal mt-lg">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-screen" id="phone-screen">
+
+            <div class="demo-step active" data-step="0">
+              <span class="demo-step-label">Step 1</span>
+              <h4 class="demo-step-heading">Open Pookie</h4>
+              <div class="demo-card-mini demo-center-pad">
+                <div class="demo-emoji-lg">💗</div>
+                <p class="demo-mini-title">Welcome back</p>
+              </div>
+            </div>
+
+            <div class="demo-step" data-step="1">
+              <span class="demo-step-label">Step 2</span>
+              <h4 class="demo-step-heading">Enable Meet Mode</h4>
+              <div class="demo-card-mini">
+                <div class="demo-row-between">
+                  <span>Meet Mode</span>
+                  <strong class="text-gradient">ON</strong>
+                </div>
+              </div>
+              <div class="demo-card-mini">You're now visible to nearby, compatible people for the next 2 hours.</div>
+            </div>
+
+            <div class="demo-step" data-step="2">
+              <span class="demo-step-label">Step 3</span>
+              <h4 class="demo-step-heading">Choose today's Vibe</h4>
+              <div class="demo-vibe-row">
+                <span class="demo-vibe-pill">☕ Coffee</span>
+                <span class="demo-vibe-pill picked">🍸 Drinks</span>
+                <span class="demo-vibe-pill">🎵 Music</span>
+                <span class="demo-vibe-pill">🤝 Networking</span>
+              </div>
+            </div>
+
+            <div class="demo-step" data-step="3">
+              <span class="demo-step-label">Step 4</span>
+              <h4 class="demo-step-heading">Nearby compatible people</h4>
+              <div class="demo-person-card"><div class="demo-avatar">🙂</div><div><strong>Mia</strong><div class="demo-person-meta">0.4 mi · 🍸 Drinks</div></div></div>
+              <div class="demo-person-card"><div class="demo-avatar">🙂</div><div><strong>Sam</strong><div class="demo-person-meta">0.7 mi · 🍸 Drinks</div></div></div>
+            </div>
+
+            <div class="demo-step" data-step="4">
+              <span class="demo-step-label">Step 5</span>
+              <h4 class="demo-step-heading">Mutual interest</h4>
+              <div class="demo-card-mini demo-center-pad-sm">
+                <div class="demo-emoji-sm">🎉</div>
+                <p class="demo-mini-title">It's a moment!</p>
+                <p class="demo-mini-sub">You and Mia are both interested.</p>
+              </div>
+            </div>
+
+            <div class="demo-step" data-step="5">
+              <span class="demo-step-label">Step 6</span>
+              <h4 class="demo-step-heading">Choose an activity</h4>
+              <div class="demo-vibe-row">
+                <span class="demo-vibe-pill picked">🍸 Drinks</span>
+                <span class="demo-vibe-pill">🍕 Dinner</span>
+                <span class="demo-vibe-pill">🎵 Live music</span>
+              </div>
+            </div>
+
+            <div class="demo-step" data-step="6">
+              <span class="demo-step-label">Step 7</span>
+              <h4 class="demo-step-heading">Schedule the meetup</h4>
+              <div class="demo-card-mini">📅 Today, 7:00 PM</div>
+              <div class="demo-card-mini">📍 The corner bar downtown</div>
+            </div>
+
+            <div class="demo-step" data-step="7">
+              <span class="demo-step-label">Step 8</span>
+              <h4 class="demo-step-heading">Enjoy. Good vibes.</h4>
+              <div class="demo-card-mini demo-center-pad">
+                <div class="demo-emoji-md">✨</div>
+                <p class="demo-mini-title">Have a great time.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="demo-controls">
+          <div class="demo-flow-list" id="demo-flow-list">
+            <button class="demo-flow-item active" data-step="0" type="button"><span class="demo-flow-num">1</span> Open Pookie</button>
+            <button class="demo-flow-item" data-step="1" type="button"><span class="demo-flow-num">2</span> Enable Meet Mode</button>
+            <button class="demo-flow-item" data-step="2" type="button"><span class="demo-flow-num">3</span> Choose today's Vibe</button>
+            <button class="demo-flow-item" data-step="3" type="button"><span class="demo-flow-num">4</span> Nearby compatible people appear</button>
+            <button class="demo-flow-item" data-step="4" type="button"><span class="demo-flow-num">5</span> Mutual interest</button>
+            <button class="demo-flow-item" data-step="5" type="button"><span class="demo-flow-num">6</span> Choose activity</button>
+            <button class="demo-flow-item" data-step="6" type="button"><span class="demo-flow-num">7</span> Schedule meetup</button>
+            <button class="demo-flow-item" data-step="7" type="button"><span class="demo-flow-num">8</span> Enjoy. Good vibes.</button>
+          </div>
+          <div class="demo-nav-row">
+            <button class="btn btn-ghost" id="demo-prev" type="button">← Back</button>
+            <button class="btn btn-primary" id="demo-next" type="button">Next →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REAL INVITE FORM (working today) ================= -->
     <section class="section section-narrow" id="invite">
-      <p class="eyebrow reveal">Send a real invite</p>
-      <h2 class="section-title reveal">Ask someone for coffee</h2>
-      <p class="section-sub reveal">They'll get an email to accept, suggest another time, or decline — no pressure either way.</p>
+      <p class="section-eyebrow reveal">Not a mockup — this one's real</p>
+      <h2 class="section-title reveal">Send an actual invite, right now</h2>
+      <p class="section-sub reveal">Free for anyone to use, with a fair send limit to keep it spam-free. They'll get an email to accept, suggest another time, or decline — no account needed on either side.</p>
 
       <div class="card mt-lg reveal">
         <form id="invite-form" novalidate>
@@ -109,7 +302,7 @@
             </label>
             <label class="field field-full">
               <span class="field-label">Place</span>
-              <input type="text" id="inv-place" placeholder="Café Central, Vienna" required />
+              <input type="text" id="inv-place" placeholder="Where should this happen?" required />
             </label>
             <label class="field">
               <span class="field-label">Date</span>
@@ -135,57 +328,32 @@
         </form>
 
         <div class="form-success hidden" id="invite-success">
-          <div class="icon">☕</div>
-          <h3>Invite sent</h3>
-          <p>We'll email you the moment they respond.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= HOW IT WORKS ================= -->
-    <section class="section section-narrow section-center" id="how-it-works">
-      <p class="eyebrow reveal">How it works</p>
-      <h2 class="section-title reveal">Three steps, no swiping</h2>
-
-      <div class="steps">
-        <div class="step-card reveal">
-          <div class="step-num">01</div>
-          <h3 class="step-title">Send an invite</h3>
-          <p class="step-text">Pick someone, a place, and a time. Or join the waitlist if you're just here early.</p>
-        </div>
-        <div class="step-card reveal">
-          <div class="step-num">02</div>
-          <h3 class="step-title">They respond</h3>
-          <p class="step-text">One email, three options: accept, suggest another time, or decline. No account needed.</p>
-        </div>
-        <div class="step-card reveal">
-          <div class="step-num">03</div>
-          <h3 class="step-title">You meet up</h3>
-          <p class="step-text">Once it's confirmed, you both get a calendar invite. Just show up.</p>
+          <div class="demo-emoji-lg">💌</div>
+          <p class="demo-mini-title">Invite sent</p>
+          <p class="demo-mini-sub">We'll email you the moment they respond — accepted invites get a calendar file too.</p>
         </div>
       </div>
     </section>
 
     <!-- ================= WAITLIST ================= -->
-    <section class="section section-narrow section-center" id="waitlist">
-      <p class="eyebrow reveal">Early access</p>
-      <h2 class="section-title reveal">Join the waitlist</h2>
-      <p class="section-sub reveal">No spam — just a heads up when things move. Referring friends moves you up.</p>
+    <section class="section section-narrow" id="waitlist">
+      <div class="card card-wide">
+        <h2 class="success-title">Get early access</h2>
+        <p class="success-sub">No spam, no pressure — just a heads up when things move. Referring friends moves you up.</p>
 
-      <div class="card waitlist-card mt-lg reveal">
-        <form id="waitlist-form" novalidate>
+        <form id="waitlist-form" class="plan-form" novalidate>
           <div class="field-grid">
             <label class="field">
               <span class="field-label">Name <em>(optional)</em></span>
-              <input type="text" id="wl-name" autocomplete="name" />
+              <input type="text" id="wl-name" autocomplete="given-name" placeholder="What should we call you?" />
             </label>
             <label class="field">
               <span class="field-label">Email</span>
-              <input type="email" id="wl-email" autocomplete="email" required />
+              <input type="email" id="wl-email" autocomplete="email" placeholder="you@example.com" required />
             </label>
             <label class="field field-full">
               <span class="field-label">City <em>(optional)</em></span>
-              <input type="text" id="wl-city" autocomplete="address-level2" />
+              <input type="text" id="wl-city" autocomplete="country-name" placeholder="Where are you based?" />
             </label>
           </div>
 
@@ -194,19 +362,20 @@
             <input type="text" id="wl-website" tabindex="-1" autocomplete="off" />
           </label>
 
-          <label class="checkbox-field">
-            <input type="checkbox" id="wl-consent" required />
-            <span>I agree to the <a href="/datenschutz.html">privacy policy</a> and to receive emails about Pookie.</span>
+          <label class="field-full" style="display:flex; gap:10px; align-items:flex-start; margin: 6px 0 18px; font-size: 0.9rem; color: var(--color-ink-soft);">
+            <input type="checkbox" id="wl-consent" required style="margin-top: 3px;" />
+            <span>I agree to the <a href="/privacy.html">privacy policy</a> and to receive emails about Pookie.</span>
           </label>
 
-          <button type="submit" class="btn btn-confirm magnetic" id="waitlist-submit">Join the waitlist</button>
+          <button type="submit" id="wl-submit" class="btn btn-confirm magnetic">Join the waitlist <span class="btn-emoji">→</span></button>
           <p class="form-message" id="waitlist-form-message" aria-live="polite"></p>
         </form>
 
         <div class="form-success hidden" id="waitlist-success">
-          <div class="icon">📬</div>
-          <h3>Check your inbox</h3>
-          <p>Click the confirmation link we just sent to lock in your spot.</p>
+          <h2 class="confirmed-title">You're almost on the list <span class="sparkle-emoji">✨</span></h2>
+          <div class="good-vibes-copy">
+            <p id="waitlist-success-text">Check your inbox to confirm — then you'll get your referral link.</p>
+          </div>
         </div>
       </div>
     </section>

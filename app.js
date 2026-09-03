@@ -1,6 +1,9 @@
 /* ==========================================================================
-   Homepage — page-specific interactions. Shared helpers live in common.js
-   (window.Shared). Both forms post straight to /api/*.
+   Pookie homepage — page-specific interactions. Shared cursor/magnetic/
+   particles/FX/reveal helpers live in common.js (window.Shared).
+   The Vibe Mode grid and phone-mockup demo are decorative previews (no
+   backend calls). The invite form and waitlist form are real and post to
+   /api/invite and /api/waitlist respectively.
    ========================================================================== */
 
 (() => {
@@ -10,7 +13,6 @@
   Shared.initChrome();
   Shared.initCursor();
   Shared.initMagnetic();
-  Shared.initTilt();
   Shared.initParticles();
   Shared.initReveal();
   Shared.initAnalytics();
@@ -19,25 +21,52 @@
   const prefersReducedMotion = Shared.prefersReducedMotion;
 
   /* ------------------------------------------------------------------ */
-  /* Interactive invite-preview card — flips to "Accepted" on hover/tap  */
+  /* Vibe Mode grid — tappable preview, purely decorative                */
   /* ------------------------------------------------------------------ */
 
-  const invitePreview = document.getElementById('invite-preview');
-  if (invitePreview) {
-    const setAccepted = (on) => {
-      invitePreview.classList.toggle('is-accepted', on);
-      invitePreview.querySelector('.invite-preview-status').textContent = on ? 'Accepted' : 'Waiting for a reply';
+  document.querySelectorAll('.vibe-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.vibe-chip').forEach((c) => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      const rect = chip.getBoundingClientRect();
+      FX.sparkleBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, prefersReducedMotion ? 4 : 12);
+    });
+  });
+
+  /* ------------------------------------------------------------------ */
+  /* Interactive product demo (phone mockup) — purely decorative         */
+  /* ------------------------------------------------------------------ */
+
+  const demoSteps = Array.from(document.querySelectorAll('.demo-step'));
+  const demoFlowItems = Array.from(document.querySelectorAll('.demo-flow-item'));
+  const demoPrev = document.getElementById('demo-prev');
+  const demoNext = document.getElementById('demo-next');
+  let demoIndex = 0;
+
+  if (demoSteps.length) {
+    const showDemoStep = (index) => {
+      demoIndex = Math.max(0, Math.min(demoSteps.length - 1, index));
+      demoSteps.forEach((el) => el.classList.toggle('active', Number(el.dataset.step) === demoIndex));
+      demoFlowItems.forEach((el) => el.classList.toggle('active', Number(el.dataset.step) === demoIndex));
+      demoPrev.disabled = demoIndex === 0;
+      demoNext.textContent = demoIndex === demoSteps.length - 1 ? 'Restart ↺' : 'Next →';
     };
-    if (!Shared.isCoarsePointer) {
-      invitePreview.addEventListener('mouseenter', () => setAccepted(true));
-      invitePreview.addEventListener('mouseleave', () => setAccepted(false));
-    } else {
-      invitePreview.addEventListener('click', () => setAccepted(!invitePreview.classList.contains('is-accepted')));
-    }
+
+    demoFlowItems.forEach((item) => {
+      item.addEventListener('click', () => showDemoStep(Number(item.dataset.step)));
+    });
+
+    demoPrev.addEventListener('click', () => showDemoStep(demoIndex - 1));
+    demoNext.addEventListener('click', () => {
+      if (demoIndex === demoSteps.length - 1) showDemoStep(0);
+      else showDemoStep(demoIndex + 1);
+    });
+
+    showDemoStep(0);
   }
 
   /* ------------------------------------------------------------------ */
-  /* Invite form                                                         */
+  /* Invite form — real, posts to /api/invite                            */
   /* ------------------------------------------------------------------ */
 
   const inviteForm = document.getElementById('invite-form');
@@ -109,11 +138,11 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Waitlist form                                                       */
+  /* Waitlist form — real, posts to /api/waitlist                        */
   /* ------------------------------------------------------------------ */
 
   const waitlistForm = document.getElementById('waitlist-form');
-  const waitlistSubmit = document.getElementById('waitlist-submit');
+  const waitlistSubmit = document.getElementById('wl-submit');
   const waitlistMessage = document.getElementById('waitlist-form-message');
   const waitlistSuccess = document.getElementById('waitlist-success');
 
@@ -149,7 +178,7 @@
       const { ok, data } = await Shared.apiPost('/api/waitlist', payload);
 
       waitlistSubmit.disabled = false;
-      waitlistSubmit.textContent = 'Join the waitlist';
+      waitlistSubmit.innerHTML = 'Join the waitlist <span class="btn-emoji">→</span>';
 
       if (!ok || !data?.ok) {
         setFormMessage(waitlistMessage, data?.error || 'Something went wrong. Please try again.', 'is-error');
@@ -163,10 +192,9 @@
       waitlistForm.classList.add('hidden');
       waitlistSuccess.classList.remove('hidden');
       if (data.already_registered) {
-        waitlistSuccess.querySelector('h3').textContent = "You're already on the list";
-        waitlistSuccess.querySelector('p').textContent = data.position
-          ? `You're #${data.position}. Check your inbox if you haven't confirmed yet.`
-          : "Check your inbox if you haven't confirmed yet.";
+        document.getElementById('waitlist-success-text').textContent = data.position
+          ? `You're already on the list at #${data.position}. Check your inbox if you haven't confirmed yet.`
+          : "You're already on the list. Check your inbox if you haven't confirmed yet.";
       }
     });
   }
