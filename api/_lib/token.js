@@ -40,8 +40,11 @@ export function signToken(type, id, { expSeconds } = {}) {
  * @returns {{ ok: true, type: string, id: string, exp: number } | { ok: false, reason: string }}
  */
 export function verifyToken(token, expectedType) {
+  // Let a missing/misconfigured TOKEN_SECRET throw (status 500) rather than
+  // being swallowed into a misleading "invalid token" result below — callers
+  // must let this propagate to their own catch block.
+  const secret = getSecret();
   try {
-    const secret = getSecret();
     if (!token || typeof token !== 'string') return { ok: false, reason: 'malformed' };
 
     const parts = token.split('.');

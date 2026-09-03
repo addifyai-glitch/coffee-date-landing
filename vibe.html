@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Let's See If We Vibe 😎</title>
+  <meta name="description" content="A confident, no-pressure invitation to grab an experience together — coffee, drinks, a concert, or a total surprise. If we vibe, awesome. If not, no hard feelings." />
+  <meta name="theme-color" content="#c96bd8" />
+  <meta name="robots" content="noindex" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Let's See If We Vibe 😎" />
+  <meta property="og:description" content="I have an idea. It's either brilliant or terrible. Only one way to find out." />
+  <meta property="og:image" content="/icon.svg" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Let's See If We Vibe 😎" />
+  <meta name="twitter:description" content="One click. Zero pressure. Possibly a great story." />
+  <meta name="twitter:image" content="/icon.svg" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <link rel="apple-touch-icon" href="/icon.svg" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Let's See If We Vibe",
+    "description": "A confident, no-pressure invitation to grab an experience together.",
+    "inLanguage": "en"
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/vibe.css" />
+</head>
+<body>
+
+  <!-- Animated aurora background -->
+  <div class="bg-layer" aria-hidden="true">
+    <div class="aurora"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="grain"></div>
+    <div id="particles" class="particles-layer"></div>
+  </div>
+
+  <!-- Custom cursor -->
+  <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+
+  <nav class="site-nav nav-minimal" id="site-nav"></nav>
+
+  <main class="stage" id="stage">
+
+    <!-- HERO / PITCH SECTION -->
+    <section id="hero-section" class="card hero-card">
+      <div id="pitch-block">
+        <p class="eyebrow" id="eyebrow-text">A mildly reckless proposal</p>
+        <h1 class="headline" id="headline-text">I have a slightly irresponsible idea.<br /><span class="highlight">Interested?</span></h1>
+        <p class="subhead" id="subhead-text">Only one way to find out.</p>
+      </div>
+
+      <p class="rotator-line">
+        Maybe it's <span id="activity-word" class="activity-word">☕ coffee</span>. Who's to say.
+      </p>
+
+      <p id="main-question" class="main-question">Feel like finding out if we vibe?</p>
+
+      <div class="button-row" id="button-row">
+        <button id="yes-btn" class="btn btn-yes magnetic" type="button">
+          Let's do it <span class="btn-emoji">😎</span>
+        </button>
+        <button id="no-btn" class="btn btn-no" type="button">
+          Maybe another time
+        </button>
+      </div>
+
+      <p id="escape-message" class="escape-message" aria-live="polite"></p>
+    </section>
+
+    <!-- DECLINED SECTION -->
+    <section id="declined-section" class="card declined-card hidden" aria-live="polite">
+      <h2 class="declined-title">No worries. 👋</h2>
+      <p class="declined-sub">Thanks for stopping by. Wishing you lots of fun and good vibes! ✨</p>
+      <p class="declined-note">The offer doesn't expire, though.</p>
+      <button id="reconsider-btn" class="btn btn-ghost" type="button">Actually, let's do it</button>
+    </section>
+
+    <!-- SUCCESS / PLANNING CARD -->
+    <section id="success-section" class="card success-card hidden" aria-live="polite">
+
+      <div id="plan-step">
+        <h2 class="success-title">Look at that. We're doing this. <span class="wink">😏</span></h2>
+        <p class="success-sub">When are you free?</p>
+
+        <form id="plan-form" class="plan-form" novalidate>
+          <div class="field-grid">
+            <label class="field">
+              <span class="field-label">Name <em>(optional)</em></span>
+              <input type="text" id="name-input" name="name" autocomplete="name" placeholder="What should I call you?" />
+            </label>
+
+            <label class="field">
+              <span class="field-label">Email <em>(optional)</em></span>
+              <input type="email" id="email-input" name="email" autocomplete="email" placeholder="you@example.com" />
+            </label>
+
+            <label class="field">
+              <span class="field-label">Phone <em>(optional)</em></span>
+              <input type="tel" id="phone-input" name="phone" autocomplete="tel" placeholder="+1 555 123 4567" />
+            </label>
+
+            <label class="field">
+              <span class="field-label">Preferred activity</span>
+              <select id="activity-input" name="activity" required>
+                <option value="" disabled selected>Pick your poison</option>
+                <option value="Coffee">☕ Coffee</option>
+                <option value="Drinks">🍸 Drinks</option>
+                <option value="Dinner">🍕 Dinner</option>
+                <option value="Live music">🎵 Live music</option>
+                <option value="Festival">🎪 Festival</option>
+                <option value="Bowling">🎳 Bowling</option>
+                <option value="Arcade">🕹️ Arcade</option>
+                <option value="Comedy show">🎤 Comedy show</option>
+                <option value="Road trip">🚗 Road trip</option>
+                <option value="Sunset walk">🌅 Sunset walk</option>
+                <option value="Ice cream">🍦 Ice cream</option>
+                <option value="Museum">🖼️ Museum</option>
+                <option value="Food adventure">🌮 Food adventure</option>
+                <option value="Surprise me">🎲 Surprise me</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span class="field-label">Date</span>
+              <input type="date" id="date-input" name="date" required />
+            </label>
+
+            <label class="field">
+              <span class="field-label">Time</span>
+              <input type="time" id="time-input" name="time" required />
+            </label>
+
+            <label class="field field-full">
+              <span class="field-label">City</span>
+              <input type="text" id="city-input" name="city" placeholder="Where should this happen?" required />
+            </label>
+
+            <label class="field field-full">
+              <span class="field-label">Message <em>(optional)</em></span>
+              <textarea id="message-input" name="message" rows="3" placeholder="Anything I should know?"></textarea>
+            </label>
+          </div>
+
+          <label class="honeypot-field" aria-hidden="true">
+            Website
+            <input type="text" id="website-input" tabindex="-1" autocomplete="off" />
+          </label>
+
+          <button type="submit" id="submit-btn" class="btn btn-confirm magnetic">Lock it in <span class="btn-emoji">😎</span></button>
+          <p class="form-message" id="plan-form-message" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <div id="confirmed-step" class="hidden">
+        <h2 class="confirmed-title">Good vibes only <span class="sparkle-emoji">✨</span></h2>
+        <div class="good-vibes-copy">
+          <p>You bring your vibe.</p>
+          <p>I'll bring mine.</p>
+          <p>If we vibe, awesome.</p>
+          <p>If we don't, that's perfectly okay.</p>
+          <p>No drama.</p>
+          <p>No expectations.</p>
+          <p>No hard feelings.</p>
+          <p>Life's too short not to meet interesting people.</p>
+          <p>Let's make a great memory and see where life takes us.</p>
+          <p>I enjoy spontaneous adventures.</p>
+          <p>Maybe you'll enjoy them too.</p>
+        </div>
+        <p id="confirmed-recap" class="confirmed-recap"></p>
+        <a id="whatsapp-fallback" class="btn btn-ghost" href="#" target="_blank" rel="noopener">Open WhatsApp</a>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="site-footer" id="site-footer"></footer>
+
+  <!-- Canvas layer for confetti / heart bursts -->
+  <canvas id="fx-canvas" class="fx-canvas" aria-hidden="true"></canvas>
+
+  <script src="/common.js"></script>
+  <script src="/vibe.js"></script>
+</body>
+</html>

@@ -67,3 +67,26 @@ alter table waitlist enable row level security;
 alter table invites enable row level security;
 alter table rate_limits enable row level security;
 -- No policies on purpose: anon/authenticated get nothing. Service role bypasses RLS.
+
+-- ==========================================================================
+-- vibe_responses — "Let's See If We Vibe" invitation confirmations
+-- The restored personal-invite easter egg at /vibe.html. Same access model
+-- as everything else: service role only, no anon/authenticated policies.
+-- ==========================================================================
+
+create table vibe_responses (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  name text,
+  email text,
+  phone text,
+  activity text,
+  preferred_date date,
+  preferred_time text,
+  city text,
+  message text,
+  ip_hash text
+);
+
+alter table vibe_responses enable row level security;
+-- No policies on purpose: anon/authenticated get nothing. Service role bypasses RLS.

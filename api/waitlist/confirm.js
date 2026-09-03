@@ -12,13 +12,13 @@ export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).send('Method not allowed');
 
   const token = req.query.token;
-  const result = verifyToken(token, 'wl');
-
-  if (!result.ok) {
-    return res.status(result.reason === 'expired' ? 410 : 401).send(errorPage(result.reason));
-  }
 
   try {
+    const result = verifyToken(token, 'wl');
+    if (!result.ok) {
+      return res.status(result.reason === 'expired' ? 410 : 401).send(errorPage(result.reason));
+    }
+
     const supabase = getSupabase();
     const { data: row, error } = await supabase.from('waitlist').select('*').eq('id', result.id).maybeSingle();
     if (error) throw error;

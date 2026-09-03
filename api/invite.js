@@ -19,16 +19,16 @@ export default async function handler(req, res) {
 
 async function handleGet(req, res) {
   const token = req.query.token;
-  const inv = verifyToken(token, 'inv');
-  const result = inv.ok ? inv : verifyToken(token, 'snd');
-
-  if (!result.ok) {
-    const status = result.reason === 'expired' ? 410 : 401;
-    const message = result.reason === 'expired' ? 'This invite link has expired.' : 'This invite link looks invalid.';
-    return res.status(status).json({ ok: false, error: message });
-  }
-
   try {
+    const inv = verifyToken(token, 'inv');
+    const result = inv.ok ? inv : verifyToken(token, 'snd');
+
+    if (!result.ok) {
+      const status = result.reason === 'expired' ? 410 : 401;
+      const message = result.reason === 'expired' ? 'This invite link has expired.' : 'This invite link looks invalid.';
+      return res.status(status).json({ ok: false, error: message });
+    }
+
     const supabase = getSupabase();
     const { data: invite, error } = await supabase.from('invites').select('*').eq('id', result.id).maybeSingle();
     if (error) throw error;

@@ -50,7 +50,7 @@ function toText(html) {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-function wrapHtml({ preheader = '', heading, bodyHtml, ctaText, ctaHref }) {
+function wrapHtml({ preheader = '', heading, bodyHtml, ctaText, ctaHref, brand = 'Pookie &#9749;' }) {
   return `<!doctype html>
 <html>
 <body style="margin:0;padding:0;background:#F4EBDD;font-family:Georgia,'Times New Roman',serif;color:#2B1D16;">
@@ -59,7 +59,7 @@ function wrapHtml({ preheader = '', heading, bodyHtml, ctaText, ctaHref }) {
     <tr><td align="center">
       <table role="presentation" width="100%" style="max-width:480px;background:#ffffff;border-radius:12px;overflow:hidden;">
         <tr><td style="background:#2B1D16;padding:24px 32px;">
-          <span style="color:#F4EBDD;font-size:20px;font-weight:700;letter-spacing:0.02em;">Pookie &#9749;</span>
+          <span style="color:#F4EBDD;font-size:20px;font-weight:700;letter-spacing:0.02em;">${brand}</span>
         </td></tr>
         <tr><td style="padding:32px;">
           <h1 style="margin:0 0 16px;font-size:22px;color:#2B1D16;">${heading}</h1>
@@ -202,5 +202,33 @@ export async function sendInviteProposed({ invite, sndToken }) {
   });
   const data = await send({ to: invite.sender_email, subject, html });
   logSend('invite_proposed', invite.sender_email, data?.id);
+  return data;
+}
+
+/* ---------------- "Let's See If We Vibe" (/vibe.html), restored ---------------- */
+
+export async function sendVibeOwnerNotification(response) {
+  const to = process.env.REPLY_TO;
+  if (!to) return null; // no owner inbox configured — skip quietly, the DB row is still saved
+  const subject = 'New "Let\'s Vibe" response';
+  const rows = [
+    ['Name', response.name], ['Email', response.email], ['Phone', response.phone],
+    ['Activity', response.activity], ['Date', response.date], ['Time', response.time],
+    ['City', response.city], ['Message', response.message],
+  ].filter(([, v]) => v);
+  const bodyHtml = `<table role="presentation" style="width:100%;font-size:14px;">${rows.map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#8A7A6E;">${escapeHtml(k)}</td><td>${escapeHtml(v)}</td></tr>`).join('')}</table>`;
+  const html = wrapHtml({ heading: subject, bodyHtml, brand: "Let's Vibe &#128526;" });
+  const data = await send({ to, subject, html });
+  logSend('vibe_owner_notification', to, data?.id);
+  return data;
+}
+
+export async function sendVibeVisitorConfirmation({ email, activity, date, time, city }) {
+  if (!email) return null;
+  const subject = 'Good vibes only ✨';
+  const bodyHtml = `<p>You're locked in for <strong>${escapeHtml(activity)}</strong> on ${escapeHtml(date)} at ${escapeHtml(time)}, in ${escapeHtml(city)}.</p><p>Good vibes only. See you soon.</p>`;
+  const html = wrapHtml({ heading: subject, bodyHtml, brand: "Let's Vibe &#128526;" });
+  const data = await send({ to: email, subject, html });
+  logSend('vibe_visitor_confirmation', email, data?.id);
   return data;
 }

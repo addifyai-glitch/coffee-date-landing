@@ -2,10 +2,13 @@
 
 Meet for coffee. Actually meet.
 
-A static HTML/CSS/JS frontend plus Vercel Serverless Functions in `/api`. Two flows:
+A static HTML/CSS/JS frontend plus Vercel Serverless Functions in `/api`. Two coexisting experiences:
 
+**The Pookie product** (`/`) — a café-themed landing page with two flows:
 1. **Coffee invite** — send someone a real invite (place, date, time). They get one email to accept, suggest another time, or decline — no account needed. Confirmed invites get a `.ics` calendar attachment, sent to both parties.
 2. **Waitlist** — email + double opt-in confirmation, with a referral system (each confirmed referral moves you up 5 spots).
+
+**"Let's See If We Vibe"** (`/vibe.html`) — the original personal-invitation easter egg (pink/purple, dodge-button, the works), preserved from before the SPEC.md rebuild and kept running alongside the new product. It uses its own stylesheet (`vibe.css`) so the two designs never bleed into each other, but posts through the same server-side backend as everything else (`/api/vibe`) instead of the original's client-side Supabase/EmailJS calls.
 
 No framework, no build step for the frontend. The backend is Node 20 functions under `/api/**`, deployed by Vercel's zero-config detection. The browser never talks to the database or the email provider directly — every write goes through `/api/*`, authenticated with a service-role key that only server code ever sees.
 
@@ -17,6 +20,7 @@ No framework, no build step for the frontend. The backend is Node 20 functions u
 ├── respond.html                 Invite recipient/sender response page
 ├── about.html / contact.html / faq.html
 ├── datenschutz.html / impressum.html   Placeholder legal pages — see below
+├── vibe.html / vibe.css / vibe.js   "Let's See If We Vibe" — the restored original page
 ├── style.css                    Shared design system (café palette, Fraunces + Manrope)
 ├── common.js                    Shared foundation: theme, nav/footer, cursor, FX, /api fetch helper
 ├── app.js                       Homepage-specific interactions (forms, invite-preview card)
@@ -32,11 +36,12 @@ No framework, no build step for the frontend. The backend is Node 20 functions u
     │   ├── ratelimit.js          5 requests / 10 min per endpoint + hashed IP
     │   ├── validate.js           Email normalization, honeypot check
     │   ├── ics.js                 .ics generation for confirmed invites
-    │   └── email.js               Resend wrapper + all 7 HTML email templates
+    │   └── email.js               Resend wrapper + all email templates
     ├── waitlist.js               POST — create signup, send confirm email
     ├── waitlist/confirm.js       GET  — verify token, confirm, redirect to welcome.html
     ├── invite.js                  POST create / GET fetch-by-token
     ├── invite/respond.js          POST accept / decline / propose
+    ├── vibe.js                    POST — store + email a "Let's Vibe" response
     └── admin/waitlist.js          GET — Basic Auth, JSON or ?format=csv
 ```
 
@@ -64,7 +69,7 @@ None of these are ever referenced in client-side code — only inside `/api/**`.
 ## Setting up Supabase
 
 1. Create a **new, isolated** Supabase project (not shared with any other project) — EU/Frankfurt region.
-2. Project → SQL Editor → New query → paste the full contents of `supabase/schema.sql` → run it. This creates `waitlist`, `invites`, and `rate_limits`, all with row-level security enabled and **no policies** — anon and authenticated both get zero access. The only way in is the service-role key, used exclusively inside `/api/**`.
+2. Project → SQL Editor → New query → paste the full contents of `supabase/schema.sql` → run it. This creates `waitlist`, `invites`, `rate_limits`, and `vibe_responses` (for `/vibe.html`), all with row-level security enabled and **no policies** — anon and authenticated both get zero access. The only way in is the service-role key, used exclusively inside `/api/**`.
 3. Settings → API → copy the **Project URL** and the **service_role** key (not anon) into `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`.
 
 ## Setting up Resend

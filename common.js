@@ -56,7 +56,18 @@ const Shared = (() => {
     { label: 'FAQ', href: '/faq.html' },
   ];
 
-  const buildNav = () => {
+  const buildNav = (variant) => {
+    if (variant === 'vibe') {
+      // Minimal nav for the "Let's Vibe" easter-egg page — brand mark plus
+      // a single link back to the main Pookie product.
+      return `
+        <a href="/vibe.html" class="nav-brand"><span aria-hidden="true">😎</span> Let's Vibe</a>
+        <ul class="nav-links"><li><a href="/">Pookie ✨</a></li></ul>
+        <div class="nav-actions">
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">🌙</button>
+        </div>
+      `;
+    }
     const linksHtml = NAV_LINKS.map((l) => `<li><a href="${l.href}">${l.label}</a></li>`).join('');
     return `
       <a href="/" class="nav-brand"><span aria-hidden="true">☕</span> Pookie</a>
@@ -77,14 +88,17 @@ const Shared = (() => {
       <li><a href="/contact.html">Contact</a></li>
       <li><a href="/datenschutz.html">Datenschutz</a></li>
       <li><a href="/impressum.html">Impressum</a></li>
+      <li><a href="/vibe.html">Let's Vibe 😎</a></li>
     </ul>
     <p class="footer-credit">© <span id="footer-year"></span> Pookie. Made for real meetups, not endless scrolling.</p>
   `;
 
-  const initChrome = () => {
+  const initChrome = (opts = {}) => {
+    const { variant } = opts;
     const navEl = document.getElementById('site-nav');
     if (navEl) {
-      navEl.innerHTML = buildNav();
+      navEl.innerHTML = buildNav(variant);
+      if (variant === 'vibe') navEl.classList.add('nav-minimal');
       const menuToggle = document.getElementById('nav-menu-toggle');
       if (menuToggle) menuToggle.addEventListener('click', () => navEl.classList.toggle('nav-open'));
       const themeBtn = document.getElementById('theme-toggle');
@@ -161,7 +175,7 @@ const Shared = (() => {
 
   /* ---------------- Ambient particles ---------------- */
 
-  const initParticles = (containerId = 'particles') => {
+  const initParticles = (containerId = 'particles', { color } = {}) => {
     const layer = document.getElementById(containerId);
     if (!layer || prefersReducedMotion) return;
     const spawn = () => {
@@ -172,6 +186,7 @@ const Shared = (() => {
       el.style.height = `${size}px`;
       el.style.left = `${rand(0, 100)}vw`;
       el.style.bottom = '-4vh';
+      if (color) el.style.background = color;
       el.style.setProperty('--drift', `${rand(-50, 50)}px`);
       el.style.animationDuration = `${rand(14, 24)}s`;
       layer.appendChild(el);
@@ -202,7 +217,7 @@ const Shared = (() => {
 
   /* ---------------- FX canvas (confetti / sparkles, café palette) ---------------- */
 
-  const initFX = (canvasId = 'fx-canvas') => {
+  const initFX = (canvasId = 'fx-canvas', { palette: customPalette } = {}) => {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return null;
     const ctx = canvas.getContext('2d');
@@ -240,7 +255,7 @@ const Shared = (() => {
       ensureLoop();
     };
 
-    const PALETTE = ['#C8552D', '#8A9A7B', '#F4EBDD', '#2B1D16'];
+    const PALETTE = customPalette || ['#C8552D', '#8A9A7B', '#F4EBDD', '#2B1D16'];
 
     class ConfettiPiece {
       constructor(x, y) {
@@ -275,6 +290,26 @@ const Shared = (() => {
       }
     }
 
+    class HeartParticle {
+      constructor(x, y, opts = {}) {
+        this.x = x; this.y = y;
+        this.size = opts.size || rand(14, 24);
+        this.vx = opts.vx ?? rand(-5, 5);
+        this.vy = opts.vy ?? rand(-9, -3);
+        this.gravity = opts.gravity ?? 0.18;
+        this.life = 1; this.decay = opts.decay || rand(0.007, 0.014);
+        this.rotation = rand(-0.3, 0.3);
+      }
+      update() { this.vy += this.gravity; this.x += this.vx; this.y += this.vy; this.life -= this.decay; }
+      draw(c) {
+        c.save(); c.globalAlpha = clamp(this.life, 0, 1);
+        c.translate(this.x, this.y); c.rotate(this.rotation);
+        c.font = `${this.size}px sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
+        c.fillText('❤️', 0, 0);
+        c.restore();
+      }
+    }
+
     return {
       confettiBurst(x, y, count = 90) {
         const items = [];
@@ -286,6 +321,15 @@ const Shared = (() => {
         for (let i = 0; i < count; i += 1) {
           const angle = rand(0, Math.PI * 2);
           items.push(new SparkParticle(x, y, angle, rand(1.5, 4.5), PALETTE[Math.floor(rand(0, PALETTE.length))]));
+        }
+        addParticles(items);
+      },
+      heartBurst(x, y, count = 24) {
+        const items = [];
+        for (let i = 0; i < count; i += 1) {
+          const angle = rand(0, Math.PI * 2);
+          const speed = rand(3, 8);
+          items.push(new HeartParticle(x, y, { vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, gravity: 0.2 }));
         }
         addParticles(items);
       },
