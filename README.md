@@ -10,7 +10,7 @@ A static HTML/CSS/JS frontend plus Vercel Serverless Functions in `/api`. One sh
 
 **"Let's See If We Vibe"** (`/vibe.html`) — the original personal-invitation easter egg (dodge-button, the works), preserved as a second, coexisting page.
 
-No framework, no build step for the frontend. The backend is Node 20 functions under `/api/**`, deployed by Vercel's zero-config detection. The browser never talks to the database or the email provider directly — every write goes through `/api/*`, authenticated with a service-role key that only server code ever sees.
+No framework, no build step for the frontend. The backend is Node 24 functions under `/api/**`, deployed by Vercel's zero-config detection. The browser never talks to the database or the email provider directly — every write goes through `/api/*`, authenticated with a service-role key that only server code ever sees.
 
 ## Project structure
 
