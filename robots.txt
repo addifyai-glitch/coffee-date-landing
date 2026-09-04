@@ -3,5 +3,6 @@ Allow: /
 Disallow: /api/
 Disallow: /welcome.html
 Disallow: /respond.html
+Disallow: /impressum.html
 
 Sitemap: https://pookie.addify.ae/sitemap.xml

@@ -62,7 +62,7 @@ function errorPage(reason) {
     malformed: 'This link looks invalid.',
     wrong_type: 'This link looks invalid.',
     not_found: "We couldn't find that signup.",
-    server_error: 'Something went wrong. Please try again shortly.',
+    server_error: 'Something went wrong — try again shortly.',
   };
   const message = messages[reason] || 'Something went wrong.';
   return `<!doctype html><html><body style="font-family:Georgia,serif;padding:64px 24px;text-align:center;background:#F4EBDD;color:#2B1D16;"><h1>${message}</h1><p><a href="/" style="color:#C8552D;">Back to Pookie</a></p></body></html>`;

@@ -30,14 +30,14 @@
   /* ------------------------------------------------------------------ */
 
   const PITCHES = [
-    { eyebrow: 'A mildly reckless proposal', line1: 'I have a slightly irresponsible idea.', highlight: 'Interested?', sub: 'Only one way to find out.' },
+    { eyebrow: 'A spontaneous idea', line1: 'I have a slightly spontaneous idea.', highlight: 'Interested?', sub: 'Only one way to find out.' },
     { eyebrow: 'Plot twist incoming', line1: 'One random decision', highlight: 'could become a great story.', sub: "Or at least a memorable one." },
-    { eyebrow: 'Fair warning', line1: 'Fair warning:', highlight: 'this might be dangerously fun.', sub: "I take zero responsibility for a good time." },
+    { eyebrow: 'No pressure', line1: 'No pressure.', highlight: 'Could be fun.', sub: "That's it. That's the idea." },
     { eyebrow: 'A hypothesis', line1: "Let's find out", highlight: 'if we’re actually fun together.', sub: 'Purely for research purposes.' },
-    { eyebrow: 'Two possible outcomes', line1: 'This could go two ways:', highlight: 'hilarious, or unforgettable.', sub: "Either one works for me." },
+    { eyebrow: 'No real agenda', line1: 'No real agenda —', highlight: 'just seeing what happens.', sub: "Sounds fine to me." },
     { eyebrow: 'Low commitment, high upside', line1: 'One coffee.', highlight: 'Zero pressure. Possibly a great story.', sub: "That's the whole pitch." },
-    { eyebrow: 'A modest proposal', line1: 'I promise nothing.', highlight: 'Except at least one good laugh.', sub: 'Terms and conditions may apply.' },
-    { eyebrow: 'Today only (not really)', line1: 'Your week could use', highlight: 'a little unplanned chaos.', sub: "Just a thought." },
+    { eyebrow: 'Low-key idea', line1: 'Nothing fancy —', highlight: 'just good company.', sub: 'Worth a shot.' },
+    { eyebrow: 'Today only (not really)', line1: 'Your week could use', highlight: 'a little spontaneity.', sub: "Just a thought." },
   ];
 
   const pitchBlock = document.getElementById('pitch-block');
@@ -65,10 +65,12 @@
   /* ------------------------------------------------------------------ */
 
   const ACTIVITIES = [
-    '☕ coffee', '🍸 drinks', '🍕 dinner', '🎵 live music', '🎪 a festival',
-    '🎳 bowling', '🕹️ the arcade', '🎤 a comedy show', '🚗 a road trip',
-    '🌅 a sunset walk', '🍦 ice cream', '🖼️ a museum', '🌮 a food adventure',
-    '🎲 a total surprise',
+    '☕ coffee', '🍸 drinks', '🍕 dinner', '🥐 brunch', '🎵 live music',
+    '🎪 a festival', '🎳 bowling', '🕹️ the arcade', '🎤 a comedy show',
+    '🚗 a road trip', '🌅 a sunset walk', '🥾 a hike', '🏊 a swim',
+    '🎿 skiing or snowboarding', '🍷 glühwein', '🍦 ice cream', '🖼️ a museum',
+    '📚 a bookshop', '🧺 a market', '🎲 board games', '🌮 a food adventure',
+    '🎁 a total surprise',
   ];
   const activityWordEl = document.getElementById('activity-word');
   let activityIndex = 0;
@@ -245,7 +247,13 @@
   const revealSuccess = () => {
     successSection.classList.remove('hidden');
     const dateInput = document.getElementById('date-input');
-    if (dateInput) dateInput.min = new Date().toISOString().split('T')[0];
+    if (dateInput) {
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      dateInput.min = today.toISOString().split('T')[0];
+      dateInput.value = tomorrow.toISOString().split('T')[0];
+    }
   };
 
   noBtn.addEventListener('click', (e) => {
@@ -312,23 +320,38 @@
 
   planForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    planFormMessage.textContent = '';
+    planFormMessage.classList.remove('is-error');
+
+    const date = document.getElementById('date-input').value;
+    const time = document.getElementById('time-input').value;
+    if (date && time && new Date(`${date}T${time}`).getTime() <= Date.now()) {
+      planFormMessage.textContent = 'Choose a date and time in the future.';
+      planFormMessage.classList.add('is-error');
+      return;
+    }
+
+    if (!document.getElementById('vibe-consent').checked) {
+      planFormMessage.textContent = 'Agree to the privacy policy to continue.';
+      planFormMessage.classList.add('is-error');
+      return;
+    }
 
     const data = {
       name: document.getElementById('name-input').value.trim(),
       email: document.getElementById('email-input').value.trim(),
       phone: document.getElementById('phone-input').value.trim(),
       activity: document.getElementById('activity-input').value,
-      date: document.getElementById('date-input').value,
-      time: document.getElementById('time-input').value,
+      date,
+      time,
       city: document.getElementById('city-input').value.trim(),
       message: document.getElementById('message-input').value.trim(),
       website: document.getElementById('website-input').value,
+      consent: true,
     };
 
     submitBtn.disabled = true;
     submitBtn.textContent = 'Locking it in...';
-    planFormMessage.textContent = '';
-    planFormMessage.classList.remove('is-error');
 
     const { ok, data: response } = await Shared.apiPost('/api/vibe', data);
     if (!ok || !response?.ok) {

@@ -36,12 +36,20 @@ export default async function handler(req, res) {
       return res.status(429).json({ ok: false, error: 'Too many requests, try again in a few minutes' });
     }
 
+    if (!body.consent) {
+      return res.status(400).json({ ok: false, error: 'Agree to the privacy policy to continue.' });
+    }
+
     const activity = cleanString(body.activity, { maxLength: 60 });
     const date = cleanString(body.date, { maxLength: 20 });
     const time = cleanString(body.time, { maxLength: 20 });
     const city = cleanString(body.city, { maxLength: 120 });
     if (!activity || !date || !time || !city) {
       return res.status(400).json({ ok: false, error: 'Activity, date, time, and city are required.' });
+    }
+    const chosenAt = new Date(`${date}T${time}`);
+    if (Number.isNaN(chosenAt.getTime()) || chosenAt.getTime() <= Date.now()) {
+      return res.status(400).json({ ok: false, error: 'Choose a date and time in the future.' });
     }
 
     const name = cleanString(body.name, { maxLength: 120 });
@@ -68,6 +76,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   } catch (err) {
     console.error(err);
-    return res.status(err.status || 500).json({ ok: false, error: 'Something went wrong. Please try again.' });
+    return res.status(err.status || 500).json({ ok: false, error: 'Something went wrong — try again.' });
   }
 }

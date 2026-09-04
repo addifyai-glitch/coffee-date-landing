@@ -77,7 +77,7 @@
           <input type="date" id="propose-date" required />
         </label>
         <label class="field">
-          <span class="field-label">New time</span>
+          <span class="field-label">New time <em>(24-hour)</em></span>
           <input type="time" id="propose-time" required />
         </label>
         <button type="submit" class="btn btn-confirm magnetic mt-lg">Send the new time</button>
@@ -130,7 +130,7 @@
 
       const formatWhen = (iso, timezone) => {
         try {
-          return new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeStyle: 'short', timeZone: timezone || 'Europe/Vienna' }).format(new Date(iso));
+          return new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeStyle: 'short', timeZone: timezone || 'Europe/Vienna', hour12: false }).format(new Date(iso));
         } catch {
           return iso;
         }
@@ -197,7 +197,7 @@
         disableActions(false);
 
         if (!ok || !data?.ok) {
-          setMessage(data?.error || 'Something went wrong. Please try again.', 'is-error');
+          setMessage(data?.error || 'Something went wrong — try again.', 'is-error');
           return false;
         }
         return true;
@@ -225,6 +225,13 @@
 
       const proposeBtn = document.getElementById('propose-btn');
       const proposeForm = document.getElementById('propose-form');
+      const proposeDateInput = document.getElementById('propose-date');
+      const today = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      proposeDateInput.min = today.toISOString().split('T')[0];
+      proposeDateInput.value = tomorrow.toISOString().split('T')[0];
+
       proposeBtn.addEventListener('click', () => {
         proposeForm.classList.toggle('is-visible');
       });
@@ -234,7 +241,11 @@
         const date = document.getElementById('propose-date').value;
         const time = document.getElementById('propose-time').value;
         if (!date || !time) {
-          setMessage('Please choose a date and time.', 'is-error');
+          setMessage('Choose a date and time.', 'is-error');
+          return;
+        }
+        if (new Date(`${date}T${time}`).getTime() <= Date.now()) {
+          setMessage('Choose a date and time in the future.', 'is-error');
           return;
         }
         const proposedStartsAt = new Date(`${date}T${time}`).toISOString();

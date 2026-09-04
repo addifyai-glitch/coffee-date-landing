@@ -78,7 +78,10 @@ export default async function handler(req, res) {
     if (action === 'propose') {
       const proposedStartsAt = body.proposed_starts_at ? new Date(body.proposed_starts_at) : null;
       if (!proposedStartsAt || Number.isNaN(proposedStartsAt.getTime())) {
-        return res.status(400).json({ ok: false, error: 'Please choose a valid date and time.' });
+        return res.status(400).json({ ok: false, error: 'Choose a valid date and time.' });
+      }
+      if (proposedStartsAt.getTime() <= Date.now()) {
+        return res.status(400).json({ ok: false, error: 'Choose a date and time in the future.' });
       }
       const { error: updateErr } = await supabase.from('invites').update({
         status: 'proposed',
@@ -98,7 +101,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'Unknown action' });
   } catch (err) {
     console.error(err);
-    return res.status(err.status || 500).json({ ok: false, error: 'Something went wrong. Please try again.' });
+    return res.status(err.status || 500).json({ ok: false, error: 'Something went wrong — try again.' });
   }
 }
 

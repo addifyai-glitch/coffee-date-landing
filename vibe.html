@@ -66,8 +66,8 @@
     <!-- HERO / PITCH SECTION -->
     <section id="hero-section" class="card hero-card">
       <div id="pitch-block">
-        <p class="eyebrow" id="eyebrow-text">A mildly reckless proposal</p>
-        <h1 class="headline" id="headline-text">I have a slightly irresponsible idea.<br /><span class="highlight">Interested?</span></h1>
+        <p class="eyebrow" id="eyebrow-text">A spontaneous idea</p>
+        <h1 class="headline" id="headline-text">I have a slightly spontaneous idea.<br /><span class="highlight">Interested?</span></h1>
         <p class="subhead" id="subhead-text">Only one way to find out.</p>
       </div>
 
@@ -124,10 +124,11 @@
             <label class="field">
               <span class="field-label">Preferred activity</span>
               <select id="activity-input" name="activity" required>
-                <option value="" disabled selected>Pick your poison</option>
+                <option value="" disabled selected>Pick one</option>
                 <option value="Coffee">☕ Coffee</option>
                 <option value="Drinks">🍸 Drinks</option>
                 <option value="Dinner">🍕 Dinner</option>
+                <option value="Brunch">🥐 Brunch</option>
                 <option value="Live music">🎵 Live music</option>
                 <option value="Festival">🎪 Festival</option>
                 <option value="Bowling">🎳 Bowling</option>
@@ -135,10 +136,17 @@
                 <option value="Comedy show">🎤 Comedy show</option>
                 <option value="Road trip">🚗 Road trip</option>
                 <option value="Sunset walk">🌅 Sunset walk</option>
+                <option value="Hike">🥾 Hike</option>
+                <option value="Swim">🏊 Swim</option>
+                <option value="Ski or snowboard">🎿 Ski or snowboard</option>
+                <option value="Glühwein">🍷 Glühwein</option>
                 <option value="Ice cream">🍦 Ice cream</option>
                 <option value="Museum">🖼️ Museum</option>
+                <option value="Bookshop">📚 Bookshop</option>
+                <option value="Market">🧺 Market</option>
+                <option value="Board games">🎲 Board games</option>
                 <option value="Food adventure">🌮 Food adventure</option>
-                <option value="Surprise me">🎲 Surprise me</option>
+                <option value="Surprise me">🎁 Surprise me</option>
               </select>
             </label>
 
@@ -148,7 +156,7 @@
             </label>
 
             <label class="field">
-              <span class="field-label">Time</span>
+              <span class="field-label">Time <em>(24-hour)</em></span>
               <input type="time" id="time-input" name="time" required />
             </label>
 
@@ -166,6 +174,11 @@
           <label class="honeypot-field" aria-hidden="true">
             Website
             <input type="text" id="website-input" tabindex="-1" autocomplete="off" />
+          </label>
+
+          <label class="checkbox-field">
+            <input type="checkbox" id="vibe-consent" required />
+            <span>I agree to the <a href="/privacy.html">privacy policy</a>.</span>
           </label>
 
           <button type="submit" id="submit-btn" class="btn btn-confirm magnetic">Lock it in <span class="btn-emoji">😎</span></button>

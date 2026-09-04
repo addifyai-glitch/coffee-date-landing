@@ -83,15 +83,14 @@ const Shared = (() => {
 
   const buildFooter = () => `
     <p class="footer-tagline">Built with ❤️ — Currently in Early Access</p>
-    <p class="footer-sub">Help shape the future of real-world social discovery. Good vibes only.</p>
+    <p class="footer-sub">Pookie is an early test project. Nothing here is a finished product.</p>
     <ul class="footer-links">
       <li><a href="/about.html">About</a></li>
       <li><a href="/faq.html">FAQ</a></li>
       <li><a href="/contact.html">Contact</a></li>
       <li><a href="/privacy.html">Privacy</a></li>
-      <li><a href="/terms.html">Terms</a></li>
       <li><a href="/datenschutz.html">Datenschutz</a></li>
-      <li><a href="/impressum.html">Impressum</a></li>
+      <li><a href="/terms.html">Terms</a></li>
       <li><a href="/#waitlist">Waitlist</a></li>
       <li><a href="/vibe.html">Let's Vibe 😎</a></li>
     </ul>

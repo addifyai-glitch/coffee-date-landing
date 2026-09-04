@@ -36,10 +36,13 @@ const escapeHtml = (str) => String(str ?? '').replace(/[&<>"']/g, (c) => ({
 
 function formatDateTime(isoString, timezone) {
   try {
+    // hour12: false is explicit, not just relying on en-GB's default —
+    // 24-hour time everywhere, guaranteed, not locale-dependent.
     return new Intl.DateTimeFormat('en-GB', {
       dateStyle: 'full',
       timeStyle: 'short',
       timeZone: timezone || 'Europe/Vienna',
+      hour12: false,
     }).format(new Date(isoString));
   } catch {
     return new Date(isoString).toISOString();

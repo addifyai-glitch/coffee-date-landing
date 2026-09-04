@@ -36,7 +36,7 @@ export default async function handler(req, res) {
 
     const email = normalizeEmail(body.email);
     if (!email) return res.status(400).json({ ok: false, error: 'A valid email is required' });
-    if (!body.consent) return res.status(400).json({ ok: false, error: 'Please agree to the privacy policy to join the waitlist' });
+    if (!body.consent) return res.status(400).json({ ok: false, error: 'Agree to the privacy policy to join the waitlist' });
 
     const name = cleanString(body.name, { maxLength: 120 });
     const city = cleanString(body.city, { maxLength: 120 });
@@ -94,6 +94,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, position: nextPosition });
   } catch (err) {
     console.error(err);
-    return res.status(err.status || 500).json({ ok: false, error: 'Something went wrong. Please try again.' });
+    return res.status(err.status || 500).json({ ok: false, error: 'Something went wrong — try again.' });
   }
 }

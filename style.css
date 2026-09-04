@@ -731,6 +731,31 @@ img, svg, canvas { max-width: 100%; }
   box-shadow: 0 0 0 4px rgba(255, 111, 145, 0.18);
 }
 
+.field input:invalid.touched,
+.field input.field-invalid {
+  border-color: #c0392b;
+}
+
+.field-error {
+  display: none;
+  font-size: 0.82rem;
+  color: #c0392b;
+  margin-top: 2px;
+}
+.field-error.show { display: block; }
+
+.checkbox-field {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 4px 0 20px;
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+  text-align: left;
+}
+.checkbox-field input { margin-top: 3px; width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--color-rose); }
+.checkbox-field a { color: var(--color-link); font-weight: 600; }
+
 .btn-confirm {
   margin-top: 4px;
   background: var(--gradient-btn-confirm);

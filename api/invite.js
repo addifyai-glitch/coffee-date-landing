@@ -89,6 +89,10 @@ async function handlePost(req, res) {
       return res.status(429).json({ ok: false, error: 'Too many requests, try again in a few minutes' });
     }
 
+    if (!body.consent) {
+      return res.status(400).json({ ok: false, error: 'Agree to the privacy policy to send an invite.' });
+    }
+
     const senderName = cleanString(body.sender_name, { maxLength: 120 });
     const senderEmail = normalizeEmail(body.sender_email);
     const recipientName = cleanString(body.recipient_name, { maxLength: 120 });
@@ -99,7 +103,10 @@ async function handlePost(req, res) {
     const message = cleanString(body.message, { maxLength: 1000 });
 
     if (!senderName || !senderEmail || !recipientEmail || !place || !startsAt || Number.isNaN(startsAt.getTime())) {
-      return res.status(400).json({ ok: false, error: 'Please fill in your name, email, their email, a place, and a date/time.' });
+      return res.status(400).json({ ok: false, error: 'Fill in your name, email, their email, a place, and a date/time.' });
+    }
+    if (startsAt.getTime() <= Date.now()) {
+      return res.status(400).json({ ok: false, error: 'Choose a date and time in the future.' });
     }
 
     const supabase = getSupabase();
@@ -125,6 +132,6 @@ async function handlePost(req, res) {
     return res.status(200).json({ ok: true, id: invite.id });
   } catch (err) {
     console.error(err);
-    return res.status(err.status || 500).json({ ok: false, error: 'Something went wrong. Please try again.' });
+    return res.status(err.status || 500).json({ ok: false, error: 'Something went wrong — try again.' });
   }
 }
