@@ -546,7 +546,10 @@ img, svg, canvas { max-width: 100%; }
 .activity-word {
   display: inline-block;
   font-weight: 600;
-  color: var(--color-rose);
+  /* --color-link, not --color-rose: this is 16px bold, below the large-text
+     threshold, so it needs the full 4.5:1 — plain rose is only 2.40:1 on
+     the card/page background. See the contrast audit. */
+  color: var(--color-link);
   min-width: 90px;
   transition: opacity 0.3s var(--ease-premium), transform 0.3s var(--ease-premium);
 }
@@ -742,7 +745,9 @@ img, svg, canvas { max-width: 100%; }
 
 .btn-confirm:disabled { opacity: 0.7; }
 
-.confirmed-title { font-size: clamp(1.7rem, 4.4vw, 2.2rem); color: var(--color-rose); margin-bottom: 18px; }
+/* --color-link, not --color-rose: 5.14-7.10:1 depending on theme/context,
+   vs. 2.40:1 for plain rose — this is a shareable, read-outdoors moment. */
+.confirmed-title { font-size: clamp(1.7rem, 4.4vw, 2.2rem); color: var(--color-link); margin-bottom: 18px; }
 .sparkle-emoji { display: inline-block; }
 
 .good-vibes-copy p { font-size: 1.02rem; color: var(--color-ink); line-height: 1.7; }
@@ -1325,7 +1330,10 @@ textarea:focus-visible {
 
 .status-page { max-width: 580px; margin: 0 auto; padding: 90px 24px 100px; text-align: center; position: relative; z-index: 1; }
 .status-icon { font-size: 3rem; margin-bottom: 18px; }
-.rank-display { font-family: var(--font-display); font-weight: 700; font-size: 3.6rem; color: var(--color-rose); margin: 14px 0 4px; }
+/* --color-link, not --color-rose: 5.14-7.10:1 depending on theme, vs.
+   2.40:1 for plain rose — the whole point of this number is to be read
+   at a glance, often outdoors. */
+.rank-display { font-family: var(--font-display); font-weight: 700; font-size: 3.6rem; color: var(--color-link); margin: 14px 0 4px; }
 .waitlist-count-label { font-size: 0.9rem; color: var(--color-ink-soft); margin-bottom: 28px; }
 
 .referral-box {
