@@ -698,6 +698,28 @@ img, svg, canvas { max-width: 100%; }
 
 .success-sub { font-size: 1.05rem; color: var(--color-ink-soft); margin-bottom: 30px; }
 
+.waitlist-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-orchid);
+  background: rgba(201, 107, 216, 0.12); /* fallback for browsers without color-mix() */
+  background: color-mix(in srgb, var(--color-orchid) 12%, transparent);
+  padding: 7px 16px;
+  border-radius: 999px;
+  margin: -12px 0 24px;
+}
+.waitlist-count.hidden { display: none; }
+.waitlist-count-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-rose);
+  flex-shrink: 0;
+}
+
 .plan-form { display: flex; flex-direction: column; gap: 22px; text-align: left; }
 
 .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }

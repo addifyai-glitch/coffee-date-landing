@@ -208,6 +208,24 @@
 
   const validateWlEmail = wireEmailField('wl-email', 'wl-email-error');
 
+  // Live waitlist count badge — a real number from the DB, not a made-up
+  // one. Stays hidden on any failure or while loading; only shown once we
+  // have a real count to report, so we never show a stale "0" flash.
+  const waitlistCountEl = document.getElementById('waitlist-count');
+  if (waitlistCountEl) {
+    Shared.apiGet('/api/waitlist/count').then(({ ok, data }) => {
+      if (!ok || !data?.ok || typeof data.count !== 'number') return;
+      const { count } = data;
+      const label = count === 0
+        ? 'Be the first to join'
+        : count === 1
+          ? '1 person has joined the waitlist'
+          : `${count.toLocaleString()} people have joined the waitlist`;
+      waitlistCountEl.innerHTML = `<span class="waitlist-count-dot" aria-hidden="true"></span>${label}`;
+      waitlistCountEl.classList.remove('hidden');
+    });
+  }
+
   const urlParams = new URLSearchParams(window.location.search);
 
   if (waitlistForm) {
