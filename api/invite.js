@@ -20,8 +20,13 @@ export default async function handler(req, res) {
 async function handleGet(req, res) {
   const token = req.query.token;
   try {
+    // Only retry as an 'snd' token when the 'inv' check failed specifically
+    // because the type didn't match — for any other failure (expired,
+    // malformed, bad signature) a second failed attempt would overwrite
+    // that accurate reason with a generic "wrong_type" from the retry,
+    // turning a real 410 (expired) into a misleading 401.
     const inv = verifyToken(token, 'inv');
-    const result = inv.ok ? inv : verifyToken(token, 'snd');
+    const result = inv.ok || inv.reason !== 'wrong_type' ? inv : verifyToken(token, 'snd');
 
     if (!result.ok) {
       const status = result.reason === 'expired' ? 410 : 401;

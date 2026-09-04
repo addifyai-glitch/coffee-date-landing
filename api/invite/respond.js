@@ -33,8 +33,11 @@ export default async function handler(req, res) {
     }
 
     const { token, action } = body;
+    // Same fix as api/invite.js's handleGet: only retry as 'snd' on an
+    // actual type mismatch, never on expired/malformed/bad-signature —
+    // otherwise the retry's generic failure clobbers the real reason.
     const inv = verifyToken(token, 'inv');
-    const result = inv.ok ? inv : verifyToken(token, 'snd');
+    const result = inv.ok || inv.reason !== 'wrong_type' ? inv : verifyToken(token, 'snd');
 
     if (!result.ok) {
       const status = result.reason === 'expired' ? 410 : 401;
