@@ -56,7 +56,7 @@ Set these for **Production** and **Preview**.
 | `SUPABASE_SERVICE_ROLE_KEY` | Same page — **service_role** key, never the anon key |
 | `RESEND_API_KEY` | From resend.com → API Keys |
 | `FROM_EMAIL` | `Pookie <hello@mail.addify.ae>` |
-| `REPLY_TO` | `irfan@addify.ae` |
+| `REPLY_TO` | `hello@addify.ae` |
 | `SITE_URL` | `https://pookie.addify.ae` |
 | `TOKEN_SECRET` | 32+ random bytes, base64 — e.g. `openssl rand -base64 32` |
 | `IP_SALT` | Any random string — e.g. `openssl rand -hex 16` |

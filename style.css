@@ -22,8 +22,31 @@
 
   --gradient-aurora: linear-gradient(120deg, #ffe1ea 0%, #ffd7c2 25%, #f0d3ff 55%, #dcd4ff 80%, #cfe6ff 100%);
   --gradient-btn-yes: linear-gradient(135deg, #ff6f91 0%, #c96bd8 100%);
-  --gradient-btn-confirm: linear-gradient(135deg, #7c6bf0 0%, #ff6f91 100%);
+  /* Violet stop lightened from #7c6bf0 -> #897af2 so dark button text still
+     clears 4.5:1 at that end of the gradient — see the contrast audit. */
+  --gradient-btn-confirm: linear-gradient(135deg, #897af2 0%, #ff6f91 100%);
   --gradient-text: linear-gradient(135deg, var(--color-rose), var(--color-violet));
+
+  /* Text color for anything sitting directly on --gradient-btn-yes or
+     --gradient-btn-confirm. Deliberately NOT theme-aware (unlike
+     --color-ink) — those two gradients don't change between light and
+     dark mode, so neither should the text color that has to stay
+     readable on them. Verified >=4.5:1 (WCAG AA) at every gradient stop:
+     rose 6.24:1, orchid 5.17:1, violet 4.82:1. */
+  --color-on-gradient: #241b2e;
+
+  /* .btn-ghost's text sits on --surface, which DOES flip between a light
+     and a dark background per theme, so this one IS theme-aware —
+     overridden in both dark-mode blocks below. Verified 5.27:1 here
+     against the light surface. */
+  --color-ghost-text: #9750a2;
+
+  /* Plain rose (--color-rose) is only 2.40:1 against the light page
+     background — well under 4.5:1 — so inline links and nav/footer link
+     hover states use this darker variant instead. Theme-aware: dark mode
+     restores the original rose below (already 7.10:1 against the dark
+     page background, no adjustment needed there). Verified 5.14:1 here. */
+  --color-link: #a6485e;
 
   --shadow-soft: 0 24px 70px rgba(120, 70, 130, 0.16);
   --shadow-btn: 0 14px 34px rgba(201, 107, 216, 0.35);
@@ -66,6 +89,12 @@
     --page-bg: #150f1c;
     --gradient-aurora: linear-gradient(120deg, #2b1930 0%, #351f3a 25%, #241a3d 55%, #1c1f3d 80%, #17233a 100%);
     --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.45);
+    /* Original orchid, unmodified — already 5.17:1 against the dark
+       surface, so no need to lighten it further like the light-mode value. */
+    --color-ghost-text: #c96bd8;
+    /* Original rose, unmodified — already 7.10:1 against the dark page
+       background. */
+    --color-link: #ff6f91;
   }
 }
 
@@ -76,6 +105,8 @@
   --surface: rgba(36, 27, 46, 0.55);
   --surface-strong: rgba(36, 27, 46, 0.82);
   --surface-border: rgba(255, 255, 255, 0.1);
+  --color-ghost-text: #c96bd8;
+  --color-link: #ff6f91;
   --page-bg: #150f1c;
   --gradient-aurora: linear-gradient(120deg, #2b1930 0%, #351f3a 25%, #241a3d 55%, #1c1f3d 80%, #17233a 100%);
   --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.45);
@@ -321,7 +352,7 @@ img, svg, canvas { max-width: 100%; }
   .nav-links a { min-height: 44px; padding: 4px 0; }
 }
 
-.nav-links a:hover, .nav-links a:focus-visible { color: var(--color-rose); }
+.nav-links a:hover, .nav-links a:focus-visible { color: var(--color-link); }
 
 .nav-actions { display: flex; align-items: center; gap: 10px; }
 
@@ -419,7 +450,7 @@ img, svg, canvas { max-width: 100%; }
   .footer-links a { min-height: 44px; padding: 4px 0; }
 }
 
-.footer-links a:hover, .footer-links a:focus-visible { color: var(--color-rose); }
+.footer-links a:hover, .footer-links a:focus-visible { color: var(--color-link); }
 
 .footer-credit { font-size: 0.8rem; opacity: 0.7; }
 
@@ -569,7 +600,7 @@ img, svg, canvas { max-width: 100%; }
 
 .btn-yes {
   background: var(--gradient-btn-yes);
-  color: #fff;
+  color: var(--color-on-gradient);
   box-shadow: var(--shadow-btn);
 }
 
@@ -594,7 +625,7 @@ img, svg, canvas { max-width: 100%; }
 
 .btn-ghost {
   background: var(--surface);
-  color: var(--color-orchid);
+  color: var(--color-ghost-text);
   border: 1px solid rgba(201, 107, 216, 0.4);
   text-decoration: none;
   display: inline-flex;
@@ -604,7 +635,7 @@ img, svg, canvas { max-width: 100%; }
 
 .btn-primary {
   background: var(--gradient-btn-yes);
-  color: #fff;
+  color: var(--color-on-gradient);
   box-shadow: var(--shadow-btn);
 }
 .btn-primary:hover, .btn-primary:focus-visible { box-shadow: 0 20px 44px rgba(255, 111, 145, 0.45); }
@@ -700,7 +731,7 @@ img, svg, canvas { max-width: 100%; }
 .btn-confirm {
   margin-top: 4px;
   background: var(--gradient-btn-confirm);
-  color: #fff;
+  color: var(--color-on-gradient);
   border-radius: 999px;
   padding: 16px 28px;
   font-size: 1.05rem;
@@ -738,7 +769,7 @@ img, svg, canvas { max-width: 100%; }
 
 .chip.selected {
   background: var(--gradient-btn-yes);
-  color: #fff;
+  color: var(--color-on-gradient);
   border-color: transparent;
 }
 
@@ -910,7 +941,7 @@ img, svg, canvas { max-width: 100%; }
   transform: translateY(-4px);
 }
 
-.vibe-chip.selected .vibe-chip-label { color: #fff; }
+.vibe-chip.selected .vibe-chip-label { color: var(--color-on-gradient); }
 .vibe-chip-emoji { font-size: 1.6rem; display: block; margin-bottom: 8px; }
 .vibe-chip-label { font-size: 0.8rem; font-weight: 600; color: var(--color-ink-soft); }
 
@@ -999,7 +1030,7 @@ img, svg, canvas { max-width: 100%; }
   font-size: 0.78rem;
 }
 
-.demo-vibe-pill.picked { background: var(--gradient-btn-yes); color: #fff; }
+.demo-vibe-pill.picked { background: var(--gradient-btn-yes); color: var(--color-on-gradient); }
 
 .demo-person-card {
   display: flex;
@@ -1183,7 +1214,12 @@ img, svg, canvas { max-width: 100%; }
 .content-page h2 { font-size: 1.3rem; margin: 32px 0 12px; }
 .content-page p, .content-page li { color: var(--color-ink-soft); line-height: 1.7; font-size: 1rem; }
 .content-page ul { padding-left: 20px; }
-.content-page a { color: var(--color-rose); font-weight: 600; }
+/* :not(.btn) is the actual fix for the unreadable-button bug: without it,
+   this selector's specificity (0,1,1) beats .btn-primary/.btn-confirm/etc.
+   (0,1,0), silently overriding their intended text color whenever a
+   button-styled link sits inside .content-page (e.g. contact.html,
+   about.html) — regardless of what that color is set to. */
+.content-page a:not(.btn) { color: var(--color-link); font-weight: 600; }
 
 .faq-item { border-bottom: 1px solid var(--surface-border); padding: 18px 0; }
 .faq-question { font-weight: 700; font-size: 1.02rem; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 4px 0; }

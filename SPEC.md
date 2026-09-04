@@ -4,7 +4,7 @@ Read this whole file before writing code. Produce an implementation plan first, 
 
 ## 0. Non-negotiables
 
-- Git author for every commit: `Addify <irfan@addify.ae>`. Never a personal name.
+- Git author for every commit: `Addify <hello@addify.ae>`. Never a personal name.
 - HARD BOUNDARY: fully isolated from Addify. Do not open, read, modify, or reference `~/Documents/Addify-gulffit`, the `Addify1` repo, Addify's Supabase project, its Vercel/Coolify config, or any addify.ae env files. `vercel link` only inside this repo; confirm the linked project is NOT `addify1` or `ict-portfolio`.
 - Secrets (Supabase service role key, Resend key, TOKEN_SECRET, admin password) exist only as Vercel env vars, read inside `/api` functions. Never in client JS, never committed.
 - Do not change stack. Stay static HTML/CSS/JS + Vercel serverless functions. No framework migration.
@@ -104,7 +104,7 @@ Shared helpers in `api/_lib/`: `supabase.js` (service client), `token.js`, `rate
 
 ## 6. Email (Resend, `api/_lib/email.js`)
 
-- From: `Pookie <hello@mail.addify.ae>` via env `FROM_EMAIL`. Reply-to: `irfan@addify.ae` via env `REPLY_TO`.
+- From: `Pookie <hello@mail.addify.ae>` via env `FROM_EMAIL`. Reply-to: `hello@addify.ae` via env `REPLY_TO`.
 - Plain HTML templates with the §9 palette, one CTA button each, text fallback. No tracking pixels.
 - Every send logs `{ template, to (masked), resend_id }` to console so the Vercel logs show it.
 
@@ -158,7 +158,7 @@ Each "prove it" step means: perform the real action against the real Supabase pr
 
 Required proofs:
 1. Waitlist: 3 signups (incl. 1 with `?ref=` of another) → confirm all → `select email, position, referral_count, confirmed_at from waitlist order by position` → shows 3 confirmed rows and referrer's `referral_count = 1`. Then resubmit one email → response shows `already_registered: true`. Then 6 rapid requests from one IP → 6th returns 429.
-2. Invite: full flow between `irfan@addify.ae` and `$TEST_EMAIL_2` (env) — create → accept → both receive template 5 with `.ics`. Paste all Resend message IDs and `select status, responded_at from invites where id = ...`. Repeat once with "propose" → sender accepts → confirmed.
+2. Invite: full flow between `hello@addify.ae` and `$TEST_EMAIL_2` (env) — create → accept → both receive template 5 with `.ics`. Paste all Resend message IDs and `select status, responded_at from invites where id = ...`. Repeat once with "propose" → sender accepts → confirmed.
 3. Token: tampered token → 401; expired token (craft with past `exp`) → 410/401 page.
 4. Repeat proof 1 (one signup) and proof 2 (one invite) on the **live** `pookie.addify.ae` URL after deploy.
 
@@ -176,7 +176,7 @@ SUPABASE_URL
 SUPABASE_SERVICE_ROLE_KEY
 RESEND_API_KEY
 FROM_EMAIL=Pookie <hello@mail.addify.ae>
-REPLY_TO=irfan@addify.ae
+REPLY_TO=hello@addify.ae
 SITE_URL=https://pookie.addify.ae
 TOKEN_SECRET            # 32+ random bytes, base64
 IP_SALT                 # random string
