@@ -1405,3 +1405,41 @@ textarea:focus-visible {
   background: rgba(255, 177, 122, 0.18); color: var(--color-ink); border-radius: var(--radius-sm);
   padding: 14px 18px; font-size: 0.88rem; margin-bottom: 32px; font-weight: 600;
 }
+
+/* ---------------- Cookie consent banner (gates Google Analytics only —
+   Plausible is cookie-free and always on) ---------------- */
+
+.cookie-consent {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 500;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 18px 22px;
+  background: var(--surface-strong);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  animation: cookie-consent-in 0.4s var(--ease-premium);
+}
+.cookie-consent.is-leaving { animation: cookie-consent-out 0.3s var(--ease-premium) forwards; }
+@keyframes cookie-consent-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes cookie-consent-out { to { opacity: 0; transform: translateY(16px); } }
+
+.cookie-consent-text { flex: 1 1 260px; font-size: 0.85rem; color: var(--color-ink-soft); margin: 0; }
+.cookie-consent-text a { color: var(--color-link); font-weight: 600; }
+.cookie-consent-actions { display: flex; gap: 10px; flex-shrink: 0; margin-left: auto; }
+.cookie-consent-actions .btn { padding: 10px 20px; font-size: 0.88rem; }
+
+@media (max-width: 480px) {
+  .cookie-consent { flex-direction: column; align-items: stretch; bottom: 10px; left: 10px; right: 10px; padding: 16px; }
+  .cookie-consent-actions { margin-left: 0; }
+  .cookie-consent-actions .btn { flex: 1; }
+}
