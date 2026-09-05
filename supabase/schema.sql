@@ -84,9 +84,15 @@ create table vibe_responses (
   preferred_date date,
   preferred_time text,
   city text,
+  place text,
   message text,
   ip_hash text
 );
 
 alter table vibe_responses enable row level security;
 -- No policies on purpose: anon/authenticated get nothing. Service role bypasses RLS.
+
+-- Added 2026-09-05: optional specific venue, alongside the existing city
+-- field. Nullable, additive, safe to run against an existing table with
+-- data already in it.
+-- alter table vibe_responses add column if not exists place text;

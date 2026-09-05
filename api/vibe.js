@@ -54,6 +54,7 @@ export default async function handler(req, res) {
 
     const name = cleanString(body.name, { maxLength: 120 });
     const phone = cleanString(body.phone, { maxLength: 40 });
+    const place = cleanString(body.place, { maxLength: 200 });
     const message = cleanString(body.message, { maxLength: 1000 });
     const emailRaw = cleanString(body.email, { maxLength: 254 });
     const email = emailRaw ? normalizeEmail(emailRaw) : null;
@@ -62,12 +63,23 @@ export default async function handler(req, res) {
     }
 
     const supabase = getSupabase();
-    const { error } = await supabase.from('vibe_responses').insert({
-      name, email, phone, activity, preferred_date: date, preferred_time: time, city, message, ip_hash: ipHash,
-    });
+    const insertRow = { name, email, phone, activity, preferred_date: date, preferred_time: time, city, place, message, ip_hash: ipHash };
+    let { error } = await supabase.from('vibe_responses').insert(insertRow);
+    // '42703' = raw Postgres undefined_column; 'PGRST204' = PostgREST's own
+    // "column not found in schema cache" — supabase-js surfaces the latter
+    // for a straight insert() like this one, but both are checked in case
+    // that ever changes.
+    if (error?.code === '42703' || error?.code === 'PGRST204') {
+      // `place` (added 2026-09-05, see supabase/schema.sql) hasn't been
+      // migrated onto vibe_responses in this environment yet — degrade
+      // gracefully instead of failing every submission until it is.
+      console.error('vibe_responses.place column missing, retrying without it:', error.message);
+      const { place: _droppedPlace, ...withoutPlace } = insertRow;
+      ({ error } = await supabase.from('vibe_responses').insert(withoutPlace));
+    }
     if (error) throw error;
 
-    const emailPayload = { name, email, activity, date, time, city, message };
+    const emailPayload = { name, email, activity, date, time, city, place, message };
     await Promise.allSettled([
       sendVibeOwnerNotification(emailPayload),
       sendVibeVisitorConfirmation(emailPayload),

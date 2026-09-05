@@ -300,6 +300,7 @@
       `Date: ${data.date}`,
       `Time: ${data.time}`,
       `City: ${data.city}`,
+      ...(data.place ? [`Place: ${data.place}`] : []),
       '', 'Looking forward to it.',
     ];
     const text = encodeURIComponent(lines.join('\n'));
@@ -345,6 +346,7 @@
       date,
       time,
       city: document.getElementById('city-input').value.trim(),
+      place: document.getElementById('place-input').value.trim(),
       message: document.getElementById('message-input').value.trim(),
       website: document.getElementById('website-input').value,
       consent: true,
@@ -370,7 +372,8 @@
     const rect = planForm.getBoundingClientRect();
     FX.heartBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, prefersReducedMotion ? 8 : 20);
 
-    confirmedRecap.textContent = `Sent for ${data.activity} on ${data.date} at ${data.time} in ${data.city}.`;
+    const placeSuffix = data.place ? ` at ${data.place}` : '';
+    confirmedRecap.textContent = `Sent for ${data.activity} on ${data.date} at ${data.time} in ${data.city}${placeSuffix}.`;
     planStep.classList.add('hidden');
     confirmedStep.classList.remove('hidden');
   });

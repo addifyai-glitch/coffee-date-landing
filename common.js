@@ -379,14 +379,72 @@ const Shared = (() => {
   /* ---------------- Analytics (Plausible, gated to the production domain) ---------------- */
 
   const PLAUSIBLE_DOMAIN = 'pookie.addify.ae';
+  const GA_MEASUREMENT_ID = 'G-VJ85NV4XYR';
+  const CONSENT_KEY = 'pookie-analytics-consent'; // 'granted' | 'denied' — unset means undecided
 
   const initAnalytics = () => {
     if (window.location.hostname !== PLAUSIBLE_DOMAIN) return;
+    // Plausible is cookie-free (no personal data, no cross-site tracking) so
+    // it doesn't need consent under GDPR/ePrivacy — it loads unconditionally,
+    // same as before.
     const script = document.createElement('script');
     script.defer = true;
     script.dataset.domain = PLAUSIBLE_DOMAIN;
     script.src = 'https://plausible.io/js/script.js';
     document.head.appendChild(script);
+
+    // Google Analytics sets tracking cookies and does need consent — it
+    // only ever loads after an explicit Accept via the consent banner
+    // below, never by default. See datenschutz.html / privacy.html for the
+    // disclosure this banner is required by.
+    initConsentBanner();
+  };
+
+  const loadGoogleAnalytics = () => {
+    if (window.dataLayer) return; // already loaded this page view
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { window.dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', GA_MEASUREMENT_ID);
+    window.gtag = gtag;
+  };
+
+  const initConsentBanner = () => {
+    const consent = localStorage.getItem(CONSENT_KEY);
+    if (consent === 'granted') { loadGoogleAnalytics(); return; }
+    if (consent === 'denied') return; // already declined — stay quiet, no banner every visit
+
+    const banner = document.createElement('div');
+    banner.className = 'cookie-consent';
+    banner.setAttribute('role', 'dialog');
+    banner.setAttribute('aria-label', 'Cookie choice');
+    banner.innerHTML = `
+      <p class="cookie-consent-text">We'd like to use optional analytics cookies to see how people use Pookie. Declining just means we can't see your visit — everything else works the same either way. <a href="/privacy.html">Privacy policy</a></p>
+      <div class="cookie-consent-actions">
+        <button type="button" class="btn btn-ghost" id="cookie-decline">Decline</button>
+        <button type="button" class="btn btn-primary" id="cookie-accept">Accept</button>
+      </div>
+    `;
+    document.body.appendChild(banner);
+
+    const dismiss = () => {
+      banner.classList.add('is-leaving');
+      setTimeout(() => banner.remove(), 300);
+    };
+    document.getElementById('cookie-accept').addEventListener('click', () => {
+      localStorage.setItem(CONSENT_KEY, 'granted');
+      loadGoogleAnalytics();
+      dismiss();
+    });
+    document.getElementById('cookie-decline').addEventListener('click', () => {
+      localStorage.setItem(CONSENT_KEY, 'denied');
+      dismiss();
+    });
   };
 
   const track = (eventName) => {
@@ -412,6 +470,7 @@ const Shared = (() => {
     apiGet,
     initFaqAccordion,
     initAnalytics,
+    initConsentBanner,
     track,
   };
 })();

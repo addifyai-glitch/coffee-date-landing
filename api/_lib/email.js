@@ -53,24 +53,30 @@ function toText(html) {
   return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-function wrapHtml({ preheader = '', heading, bodyHtml, ctaText, ctaHref, brand = 'Pookie &#9749;' }) {
+// Matches the live site's actual pink/purple theme and 💗 heart logo
+// (style.css --color-cloud/--color-ink/--color-rose, common.js buildNav) —
+// this used to be the leftover espresso/cream "café" look from an earlier
+// design phase, which no longer matched the product at all. Colors are
+// solid (no gradients/backdrop-filter) since email clients render those
+// unreliably.
+function wrapHtml({ preheader = '', heading, bodyHtml, ctaText, ctaHref, brand = 'Pookie &#128151;' }) {
   return `<!doctype html>
 <html>
-<body style="margin:0;padding:0;background:#F4EBDD;font-family:Georgia,'Times New Roman',serif;color:#2B1D16;">
+<body style="margin:0;padding:0;background:#FDF1F5;font-family:'Poppins','Segoe UI',Arial,sans-serif;color:#241B2E;">
   <span style="display:none;opacity:0;max-height:0;overflow:hidden;">${escapeHtml(preheader)}</span>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F4EBDD;padding:32px 16px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FDF1F5;padding:32px 16px;">
     <tr><td align="center">
-      <table role="presentation" width="100%" style="max-width:480px;background:#ffffff;border-radius:12px;overflow:hidden;">
-        <tr><td style="background:#2B1D16;padding:24px 32px;">
-          <span style="color:#F4EBDD;font-size:20px;font-weight:700;letter-spacing:0.02em;">${brand}</span>
+      <table role="presentation" width="100%" style="max-width:480px;background:#ffffff;border-radius:20px;overflow:hidden;">
+        <tr><td style="background:#241B2E;padding:24px 32px;">
+          <span style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:0.02em;">${brand}</span>
         </td></tr>
         <tr><td style="padding:32px;">
-          <h1 style="margin:0 0 16px;font-size:22px;color:#2B1D16;">${heading}</h1>
-          <div style="font-size:15px;line-height:1.6;color:#4a382e;">${bodyHtml}</div>
-          ${ctaText && ctaHref ? `<p style="margin:28px 0 0;"><a href="${ctaHref}" style="display:inline-block;background:#C8552D;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">${escapeHtml(ctaText)}</a></p>` : ''}
+          <h1 style="margin:0 0 16px;font-size:22px;color:#241B2E;">${heading}</h1>
+          <div style="font-size:15px;line-height:1.6;color:#4a4256;">${bodyHtml}</div>
+          ${ctaText && ctaHref ? `<p style="margin:28px 0 0;"><a href="${ctaHref}" style="display:inline-block;background:#FF6F91;color:#241B2E;text-decoration:none;padding:12px 24px;border-radius:999px;font-weight:700;">${escapeHtml(ctaText)}</a></p>` : ''}
         </td></tr>
-        <tr><td style="padding:16px 32px;border-top:1px solid #eee;">
-          <p style="margin:0;font-size:12px;color:#8A7A6E;">Sent by Pookie. If this wasn't you, you can safely ignore this email.</p>
+        <tr><td style="padding:16px 32px;border-top:1px solid #f0e6ec;">
+          <p style="margin:0;font-size:12px;color:#8a7f92;">Sent by Pookie — the platform, not a person. If this wasn't you, you can safely ignore this email.</p>
         </td></tr>
       </table>
     </td></tr>
@@ -98,6 +104,18 @@ async function send({ to, subject, html, attachments }) {
 
 function logSend(template, to, id) {
   console.log(JSON.stringify({ template, to: maskEmail(to), resend_id: id }));
+}
+
+// For a Promise.allSettled pair: logs each outcome independently so one
+// party's failure is visible in Vercel logs without ever throwing — a
+// failed send here must never turn an already-successful accept/decline
+// into a 500 for the user, and must never suppress the other party's send.
+function logSendResult(template, to, result) {
+  if (result.status === 'fulfilled') {
+    logSend(template, to, result.value?.id);
+  } else {
+    console.error(JSON.stringify({ template, to: maskEmail(to), error: result.reason?.message || String(result.reason) }));
+  }
 }
 
 export async function sendWaitlistConfirm({ email, token }) {
@@ -172,24 +190,45 @@ export async function sendInviteConfirmed({ invite, icsContent }) {
   `;
   const html = wrapHtml({ heading: subject, bodyHtml });
 
-  const results = [];
-  results.push(await send({ to: invite.sender_email, subject, html, attachments }));
-  logSend('invite_confirmed', invite.sender_email, results[0]?.id);
-  results.push(await send({ to: invite.recipient_email, subject, html, attachments }));
-  logSend('invite_confirmed', invite.recipient_email, results[1]?.id);
-  return results;
+  // Sent independently — one party's delivery failure (bad address, bounce,
+  // spam block, whatever) must never suppress the other's, and must never
+  // turn an already-successful acceptance into an error response for the
+  // user. Previously these were sequential awaits: a thrown error on the
+  // sender's send meant the recipient's was never even attempted, which is
+  // the most likely explanation for "one side got nothing."
+  const [senderResult, recipientResult] = await Promise.allSettled([
+    send({ to: invite.sender_email, subject, html, attachments }),
+    send({ to: invite.recipient_email, subject, html, attachments }),
+  ]);
+  logSendResult('invite_confirmed', invite.sender_email, senderResult);
+  logSendResult('invite_confirmed', invite.recipient_email, recipientResult);
+  return { senderResult, recipientResult };
 }
 
 export async function sendInviteDeclined({ invite }) {
+  // Both parties get told what happened — the sender that it was declined,
+  // the recipient a confirmation their decline went through — sent
+  // independently so one failing never blocks or masks the other.
   const recipientLabel = invite.recipient_name || 'They';
-  const subject = `${recipientLabel} can't make it`;
-  const html = wrapHtml({
-    heading: subject,
+  const senderSubject = `${recipientLabel} can't make it`;
+  const senderHtml = wrapHtml({
+    heading: senderSubject,
     bodyHtml: '<p>No hard feelings — maybe another time.</p>',
   });
-  const data = await send({ to: invite.sender_email, subject, html });
-  logSend('invite_declined', invite.sender_email, data?.id);
-  return data;
+
+  const recipientSubject = `You declined ${invite.sender_name}'s invite`;
+  const recipientHtml = wrapHtml({
+    heading: recipientSubject,
+    bodyHtml: `<p>We let ${escapeHtml(invite.sender_name)} know. No hard feelings.</p>`,
+  });
+
+  const [senderResult, recipientResult] = await Promise.allSettled([
+    send({ to: invite.sender_email, subject: senderSubject, html: senderHtml }),
+    send({ to: invite.recipient_email, subject: recipientSubject, html: recipientHtml }),
+  ]);
+  logSendResult('invite_declined', invite.sender_email, senderResult);
+  logSendResult('invite_declined', invite.recipient_email, recipientResult);
+  return { senderResult, recipientResult };
 }
 
 export async function sendInviteProposed({ invite, sndToken }) {
@@ -217,19 +256,20 @@ export async function sendVibeOwnerNotification(response) {
   const rows = [
     ['Name', response.name], ['Email', response.email], ['Phone', response.phone],
     ['Activity', response.activity], ['Date', response.date], ['Time', response.time],
-    ['City', response.city], ['Message', response.message],
+    ['City', response.city], ['Place', response.place], ['Message', response.message],
   ].filter(([, v]) => v);
-  const bodyHtml = `<table role="presentation" style="width:100%;font-size:14px;">${rows.map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#8A7A6E;">${escapeHtml(k)}</td><td>${escapeHtml(v)}</td></tr>`).join('')}</table>`;
+  const bodyHtml = `<table role="presentation" style="width:100%;font-size:14px;">${rows.map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#8a7f92;">${escapeHtml(k)}</td><td>${escapeHtml(v)}</td></tr>`).join('')}</table>`;
   const html = wrapHtml({ heading: subject, bodyHtml, brand: "Let's Vibe &#128526;" });
   const data = await send({ to, subject, html });
   logSend('vibe_owner_notification', to, data?.id);
   return data;
 }
 
-export async function sendVibeVisitorConfirmation({ email, activity, date, time, city }) {
+export async function sendVibeVisitorConfirmation({ email, activity, date, time, city, place }) {
   if (!email) return null;
   const subject = 'Good vibes only ✨';
-  const bodyHtml = `<p>You're locked in for <strong>${escapeHtml(activity)}</strong> on ${escapeHtml(date)} at ${escapeHtml(time)}, in ${escapeHtml(city)}.</p><p>Good vibes only. See you soon.</p>`;
+  const placePhrase = place ? ` at ${escapeHtml(place)}` : '';
+  const bodyHtml = `<p>You're locked in for <strong>${escapeHtml(activity)}</strong> on ${escapeHtml(date)} at ${escapeHtml(time)}, in ${escapeHtml(city)}${placePhrase}.</p><p>Good vibes only. See you soon.</p>`;
   const html = wrapHtml({ heading: subject, bodyHtml, brand: "Let's Vibe &#128526;" });
   const data = await send({ to: email, subject, html });
   logSend('vibe_visitor_confirmation', email, data?.id);
