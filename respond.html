@@ -90,6 +90,7 @@
       <div class="status-icon" id="done-icon">✅</div>
       <h1 id="done-heading">All set</h1>
       <p class="section-sub" id="done-sub"></p>
+      <a id="ics-download-link" class="btn btn-ghost hidden" href="#" download="coffee-date.ics">Add to calendar 📅</a>
       <a href="/" class="btn btn-ghost">Back to Pookie</a>
     </div>
 
@@ -137,6 +138,7 @@
       };
 
       let role = 'recipient';
+      let hasRecipientEmail = true;
 
       const init = async () => {
         const { ok, data } = await Shared.apiGet(`/api/invite?token=${encodeURIComponent(token)}`);
@@ -147,6 +149,7 @@
 
         role = data.role;
         const invite = data.invite;
+        hasRecipientEmail = Boolean(invite.has_recipient_email);
 
         document.getElementById('detail-place').textContent = invite.place;
         document.getElementById('detail-when').textContent = formatWhen(invite.starts_at, invite.timezone);
@@ -183,10 +186,17 @@
         document.querySelectorAll('#recipient-actions button, #sender-actions button').forEach((b) => { b.disabled = disabled; });
       };
 
-      const finish = (heading, sub, icon) => {
+      const finish = (heading, sub, icon, { showIcsLink = false } = {}) => {
         document.getElementById('done-heading').textContent = heading;
         document.getElementById('done-sub').textContent = sub;
         document.getElementById('done-icon').textContent = icon;
+        const icsLink = document.getElementById('ics-download-link');
+        if (showIcsLink) {
+          icsLink.href = `/api/invite/ics?token=${encodeURIComponent(token)}`;
+          icsLink.classList.remove('hidden');
+        } else {
+          icsLink.classList.add('hidden');
+        }
         showOnly(doneState);
       };
 
@@ -203,22 +213,27 @@
         return true;
       };
 
+      const acceptSub = () => (hasRecipientEmail
+        ? "You'll both get a calendar invite by email."
+        : "You'll get a calendar invite by email — grab yours below too.");
+
       document.getElementById('accept-btn').addEventListener('click', async () => {
         if (await respond('accept')) {
           Shared.track('invite_accept');
-          finish('Coffee confirmed', "You'll both get a calendar invite by email.", '✅');
+          finish('Coffee confirmed', acceptSub(), '✅', { showIcsLink: true });
         }
       });
 
       document.getElementById('accept-proposed-btn').addEventListener('click', async () => {
         if (await respond('accept')) {
           Shared.track('invite_accept');
-          finish('Coffee confirmed', "You'll both get a calendar invite by email.", '✅');
+          finish('Coffee confirmed', acceptSub(), '✅', { showIcsLink: true });
         }
       });
 
       document.getElementById('decline-btn').addEventListener('click', async () => {
         if (await respond('decline')) {
+          Shared.track('invite_decline');
           finish('No worries', 'We let them know. Maybe another time.', '👋');
         }
       });
@@ -250,6 +265,7 @@
         }
         const proposedStartsAt = new Date(`${date}T${time}`).toISOString();
         if (await respond('propose', { proposed_starts_at: proposedStartsAt })) {
+          Shared.track('invite_propose');
           finish('Suggestion sent', "We'll let them know your new time — you'll hear back if they accept.", '📨');
         }
       });

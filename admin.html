@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Pookie</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#c96bd8" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" /></noscript>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    /* ---- Data-viz tokens (validated set — see the dataviz skill's
+       references/palette.md; swapped brand colors would need re-validating) ---- */
+    .viz-root {
+      --series-home:  #2a78d6; /* categorical slot 1 */
+      --series-vibe:  #eb6834; /* categorical slot 2 */
+      --series-3:     #1baf7a; /* categorical slot 3 */
+      --series-4:     #eda100; /* categorical slot 4 */
+      --status-good:     #0ca30c;
+      --status-critical: #d03b3b;
+      --chart-grid: rgba(36, 27, 46, 0.12);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .viz-root {
+        --series-home: #3987e5; --series-vibe: #d95926; --series-3: #199e70; --series-4: #c98500;
+        --chart-grid: rgba(255, 255, 255, 0.12);
+      }
+    }
+    :root[data-theme="dark"] .viz-root {
+      --series-home: #3987e5; --series-vibe: #d95926; --series-3: #199e70; --series-4: #c98500;
+      --chart-grid: rgba(255, 255, 255, 0.12);
+    }
+
+    .admin-page { max-width: 1080px; margin: 0 auto; padding: 120px 24px 80px; position: relative; z-index: 1; }
+    .admin-title { font-family: var(--font-display); font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; margin-bottom: 6px; }
+    .admin-sub { color: var(--color-ink-soft); margin-bottom: 32px; }
+
+    .login-card { max-width: 380px; margin: 80px auto; background: var(--surface-strong); border: 1px solid var(--surface-border); border-radius: var(--radius-md); padding: 32px; text-align: center; }
+    .login-card input { width: 100%; padding: 12px 14px; margin-top: 10px; border-radius: 12px; border: 1px solid var(--surface-border); background: var(--surface); color: var(--color-ink); font-family: var(--font-body); font-size: 0.95rem; }
+    .login-card button { margin-top: 18px; width: 100%; }
+    .login-error { color: #d03b3b; font-size: 0.85rem; margin-top: 10px; min-height: 1.2em; }
+
+    .admin-section { margin-bottom: 48px; }
+    .admin-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    .admin-section-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; }
+    .admin-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .admin-actions button { font-size: 0.82rem; padding: 8px 16px; }
+
+    .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .stat-tile { background: var(--surface-strong); border: 1px solid var(--surface-border); border-radius: var(--radius-sm); padding: 18px 20px; }
+    .stat-label { font-size: 0.78rem; color: var(--color-ink-soft); margin-bottom: 6px; }
+    .stat-value { font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; }
+    .stat-value.is-good { color: var(--status-good); }
+
+    .chart-card { background: var(--surface-strong); border: 1px solid var(--surface-border); border-radius: var(--radius-md); padding: 24px; margin-bottom: 20px; overflow-x: auto; }
+    .chart-legend { display: flex; gap: 16px; margin-bottom: 14px; font-size: 0.82rem; flex-wrap: wrap; }
+    .chart-legend span { display: inline-flex; align-items: center; gap: 6px; color: var(--color-ink-soft); }
+    .chart-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+    .bar-list { display: flex; flex-direction: column; gap: 10px; }
+    .bar-row { display: grid; grid-template-columns: 110px 1fr 56px; align-items: center; gap: 10px; font-size: 0.85rem; }
+    .bar-row-label { color: var(--color-ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bar-track { background: var(--chart-grid); border-radius: 6px; height: 20px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 6px; min-width: 4px; }
+    .bar-row-value { text-align: right; font-variant-numeric: tabular-nums; color: var(--color-ink); }
+
+    .daily-chart-svg { display: block; overflow: visible; }
+    .daily-bar-seg { cursor: pointer; }
+    .chart-tooltip {
+      position: fixed; pointer-events: none; z-index: 999;
+      background: var(--color-ink); color: #fff; font-size: 0.78rem; padding: 6px 10px;
+      border-radius: 8px; transform: translate(-50%, -110%); white-space: nowrap; opacity: 0; transition: opacity 0.1s;
+    }
+    .chart-tooltip.show { opacity: 1; }
+
+    .table-toggle { background: none; border: none; color: var(--color-link); font-size: 0.82rem; cursor: pointer; text-decoration: underline; padding: 0; }
+    .raw-table-wrap { overflow-x: auto; margin-top: 14px; }
+    table.raw-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    table.raw-table th, table.raw-table td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--surface-border); white-space: nowrap; }
+    table.raw-table th { color: var(--color-ink-soft); font-weight: 600; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="bg-layer" aria-hidden="true">
+    <div class="aurora"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+  <div id="cursor-dot" class="cursor-dot" aria-hidden="true"></div>
+
+  <nav class="site-nav" id="site-nav"></nav>
+
+  <main class="admin-page viz-root">
+
+    <div id="login-view" class="login-card">
+      <h1 class="admin-title" style="font-size:1.3rem;">Admin login</h1>
+      <p class="admin-sub" style="margin-bottom:0;">Same credentials as the API.</p>
+      <form id="login-form">
+        <input type="text" id="admin-user" placeholder="Username" autocomplete="username" required />
+        <input type="password" id="admin-pass" placeholder="Password" autocomplete="current-password" required />
+        <button type="submit" class="btn btn-primary magnetic">Sign in</button>
+      </form>
+      <p class="login-error" id="login-error"></p>
+    </div>
+
+    <div id="dashboard-view" class="hidden">
+      <h1 class="admin-title">Admin dashboard</h1>
+      <p class="admin-sub">Waitlist and invite activity — not indexed, not linked from the site.</p>
+
+      <!-- ===================== INVITES ===================== -->
+      <section class="admin-section">
+        <div class="admin-section-head">
+          <h2 class="admin-section-title">Invites</h2>
+          <div class="admin-actions">
+            <button type="button" class="btn btn-ghost table-toggle-btn" data-target="invites-table-wrap">View raw table</button>
+            <button type="button" class="btn btn-ghost" id="invites-csv-btn">Download CSV</button>
+          </div>
+        </div>
+
+        <div class="stat-row" id="invites-stats"></div>
+
+        <div class="chart-card">
+          <div class="admin-section-title" style="font-size:0.95rem; margin-bottom:10px;">Invites per day — last 30 days</div>
+          <div class="chart-legend">
+            <span><i style="background:var(--series-home)"></i> Homepage</span>
+            <span><i style="background:var(--series-vibe)"></i> Let's Vibe</span>
+          </div>
+          <div id="invites-daily-chart"></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="chart-card">
+            <div class="admin-section-title" style="font-size:0.95rem; margin-bottom:10px;">By status</div>
+            <div class="bar-list" id="invites-by-status"></div>
+          </div>
+          <div class="chart-card">
+            <div class="admin-section-title" style="font-size:0.95rem; margin-bottom:10px;">By origin</div>
+            <div class="bar-list" id="invites-by-origin"></div>
+          </div>
+        </div>
+
+        <div class="raw-table-wrap hidden" id="invites-table-wrap"></div>
+      </section>
+
+      <!-- ===================== WAITLIST ===================== -->
+      <section class="admin-section">
+        <div class="admin-section-head">
+          <h2 class="admin-section-title">Waitlist</h2>
+          <div class="admin-actions">
+            <button type="button" class="btn btn-ghost table-toggle-btn" data-target="waitlist-table-wrap">View raw table</button>
+            <button type="button" class="btn btn-ghost" id="waitlist-csv-btn">Download CSV</button>
+          </div>
+        </div>
+
+        <div class="stat-row" id="waitlist-stats"></div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="chart-card">
+            <div class="admin-section-title" style="font-size:0.95rem; margin-bottom:10px;">By source</div>
+            <div class="bar-list" id="waitlist-by-source"></div>
+          </div>
+          <div class="chart-card">
+            <div class="admin-section-title" style="font-size:0.95rem; margin-bottom:10px;">Top cities</div>
+            <div class="bar-list" id="waitlist-by-city"></div>
+          </div>
+        </div>
+
+        <div class="raw-table-wrap hidden" id="waitlist-table-wrap"></div>
+      </section>
+    </div>
+
+  </main>
+
+  <div class="chart-tooltip" id="chart-tooltip"></div>
+
+  <footer class="site-footer" id="site-footer"></footer>
+
+  <script src="/common.js"></script>
+  <script>
+    (() => {
+      'use strict';
+      Shared.initTheme();
+      Shared.initChrome();
+      Shared.initCursor();
+
+      let credentials = null; // { user, pass } — memory only, never persisted
+
+      const loginView = document.getElementById('login-view');
+      const dashboardView = document.getElementById('dashboard-view');
+      const loginError = document.getElementById('login-error');
+      const tooltip = document.getElementById('chart-tooltip');
+
+      const authHeader = () => 'Basic ' + btoa(`${credentials.user}:${credentials.pass}`);
+
+      const authedFetch = async (path) => {
+        const res = await fetch(path, { headers: { Authorization: authHeader() } });
+        let data = null;
+        try { data = await res.json(); } catch { /* csv or empty */ }
+        return { ok: res.ok, status: res.status, data };
+      };
+
+      document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginError.textContent = '';
+        const user = document.getElementById('admin-user').value.trim();
+        const pass = document.getElementById('admin-pass').value;
+        credentials = { user, pass };
+
+        const { ok, status, data } = await authedFetch('/api/admin/invites');
+        if (status === 401) {
+          loginError.textContent = 'Wrong username or password.';
+          credentials = null;
+          return;
+        }
+        if (!ok || !data?.ok) {
+          loginError.textContent = data?.error || 'Something went wrong.';
+          credentials = null;
+          return;
+        }
+
+        loginView.classList.add('hidden');
+        dashboardView.classList.remove('hidden');
+        renderInvites(data);
+
+        const wl = await authedFetch('/api/admin/waitlist');
+        if (wl.ok && wl.data?.ok) renderWaitlist(wl.data);
+      });
+
+      /* ---------------- Shared render helpers ---------------- */
+
+      const fmt = (n) => n.toLocaleString();
+      const pct = (n) => `${Math.round(n * 100)}%`;
+
+      const statTile = (label, value, good) => `
+        <div class="stat-tile">
+          <div class="stat-label">${label}</div>
+          <div class="stat-value${good ? ' is-good' : ''}">${value}</div>
+        </div>`;
+
+      const showTooltip = (evt, text) => {
+        tooltip.textContent = text;
+        tooltip.style.left = `${evt.clientX}px`;
+        tooltip.style.top = `${evt.clientY}px`;
+        tooltip.classList.add('show');
+      };
+      const hideTooltip = () => tooltip.classList.remove('show');
+
+      const barRow = (label, value, max, color) => {
+        const widthPct = max > 0 ? Math.max((value / max) * 100, value > 0 ? 3 : 0) : 0;
+        return `
+          <div class="bar-row">
+            <div class="bar-row-label" title="${label}">${label}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${widthPct}%; background:${color};"></div></div>
+            <div class="bar-row-value">${fmt(value)}</div>
+          </div>`;
+      };
+
+      const buildRawTable = (rows, columns) => {
+        if (!rows.length) return '<p class="admin-sub">No rows yet.</p>';
+        const head = columns.map((c) => `<th>${c}</th>`).join('');
+        const body = rows.map((r) => `<tr>${columns.map((c) => `<td>${r[c] ?? ''}</td>`).join('')}</tr>`).join('');
+        return `<table class="raw-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+      };
+
+      document.querySelectorAll('.table-toggle-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const target = document.getElementById(btn.dataset.target);
+          target.classList.toggle('hidden');
+          btn.textContent = target.classList.contains('hidden') ? 'View raw table' : 'Hide raw table';
+        });
+      });
+
+      /* ---------------- Invites ---------------- */
+
+      const STATUS_COLORS = {
+        accepted: 'var(--status-good)',
+        declined: 'var(--status-critical)',
+        pending: 'var(--series-4)',
+        proposed: 'var(--series-3)',
+      };
+      const ORIGIN_COLORS = { home: 'var(--series-home)', vibe: 'var(--series-vibe)' };
+      const ORIGIN_LABELS = { home: 'Homepage', vibe: "Let's Vibe" };
+
+      function renderInvites(data) {
+        document.getElementById('invites-stats').innerHTML = [
+          statTile('Total invites', fmt(data.total)),
+          statTile('Accepted', fmt(data.by_status.accepted || 0)),
+          statTile('Accept rate (of responded)', pct(data.accept_rate_of_responded), true),
+          statTile('Accept rate (of all)', pct(data.accept_rate_of_total)),
+        ].join('');
+
+        const statusMax = Math.max(1, ...Object.values(data.by_status));
+        document.getElementById('invites-by-status').innerHTML = Object.entries(data.by_status)
+          .sort((a, b) => b[1] - a[1])
+          .map(([status, count]) => barRow(status, count, statusMax, STATUS_COLORS[status] || 'var(--series-3)'))
+          .join('');
+
+        const originMax = Math.max(1, ...Object.values(data.by_origin));
+        document.getElementById('invites-by-origin').innerHTML = Object.entries(data.by_origin)
+          .map(([origin, count]) => barRow(ORIGIN_LABELS[origin] || origin, count, originMax, ORIGIN_COLORS[origin] || 'var(--series-3)'))
+          .join('');
+
+        renderDailyChart(data.per_day_last_30);
+
+        document.getElementById('invites-table-wrap').innerHTML = buildRawTable(
+          data.rows,
+          ['created_at', 'sender_name', 'sender_email', 'recipient_name', 'recipient_email', 'place', 'starts_at', 'status', 'origin'],
+        );
+
+        document.getElementById('invites-csv-btn').onclick = () => downloadCsv('/api/admin/invites?format=csv', 'invites.csv');
+      }
+
+      function renderDailyChart(days) {
+        const width = 900;
+        const height = 200;
+        const padding = { top: 10, right: 10, bottom: 26, left: 10 };
+        const plotW = width - padding.left - padding.right;
+        const plotH = height - padding.top - padding.bottom;
+        const barGap = 2;
+        const barW = Math.max(2, plotW / days.length - barGap);
+        const maxTotal = Math.max(1, ...days.map((d) => d.total));
+
+        let bars = '';
+        days.forEach((d, i) => {
+          const x = padding.left + i * (barW + barGap);
+          const homeH = (d.home / maxTotal) * plotH;
+          const vibeH = (d.vibe / maxTotal) * plotH;
+          const baseY = padding.top + plotH;
+          if (d.home > 0) {
+            bars += `<rect class="daily-bar-seg" x="${x}" y="${baseY - homeH}" width="${barW}" height="${Math.max(homeH - (d.vibe > 0 ? 1 : 0), homeH > 0 ? 1 : 0)}" rx="2" fill="var(--series-home)" data-tip="${d.date}: ${d.home} homepage"></rect>`;
+          }
+          if (d.vibe > 0) {
+            bars += `<rect class="daily-bar-seg" x="${x}" y="${baseY - homeH - vibeH}" width="${barW}" height="${Math.max(vibeH, 1)}" rx="2" fill="var(--series-vibe)" data-tip="${d.date}: ${d.vibe} Let's Vibe"></rect>`;
+          }
+          if (d.total === 0) {
+            bars += `<rect class="daily-bar-seg" x="${x}" y="${baseY - 2}" width="${barW}" height="2" rx="1" fill="var(--chart-grid)" data-tip="${d.date}: 0 invites"></rect>`;
+          }
+          if (i === 0 || i === days.length - 1 || i === Math.floor(days.length / 2)) {
+            bars += `<text x="${x + barW / 2}" y="${height - 6}" font-size="9" fill="var(--color-ink-soft)" text-anchor="middle">${d.date.slice(5)}</text>`;
+          }
+        });
+
+        const svg = `<svg class="daily-chart-svg" viewBox="0 0 ${width} ${height}" width="100%" height="${height}" role="img" aria-label="Invites per day, last 30 days, split by origin">
+          <line x1="${padding.left}" y1="${padding.top + plotH}" x2="${width - padding.right}" y2="${padding.top + plotH}" stroke="var(--chart-grid)" stroke-width="1" />
+          ${bars}
+        </svg>`;
+        const container = document.getElementById('invites-daily-chart');
+        container.innerHTML = svg;
+
+        container.querySelectorAll('.daily-bar-seg').forEach((el) => {
+          el.addEventListener('mouseenter', (e) => showTooltip(e, el.dataset.tip));
+          el.addEventListener('mousemove', (e) => showTooltip(e, el.dataset.tip));
+          el.addEventListener('mouseleave', hideTooltip);
+        });
+      }
+
+      /* ---------------- Waitlist ---------------- */
+
+      function renderWaitlist(data) {
+        document.getElementById('waitlist-stats').innerHTML = [
+          statTile('Total signups', fmt(data.count)),
+          statTile('Confirmed', fmt(data.rows.filter((r) => r.confirmed_at).length)),
+          statTile('Sources', fmt(Object.keys(data.counts_by_source).length)),
+          statTile('Cities', fmt(Object.keys(data.counts_by_city).length)),
+        ].join('');
+
+        const sourceMax = Math.max(1, ...Object.values(data.counts_by_source));
+        document.getElementById('waitlist-by-source').innerHTML = Object.entries(data.counts_by_source)
+          .sort((a, b) => b[1] - a[1])
+          .map(([source, count]) => barRow(source, count, sourceMax, 'var(--series-home)'))
+          .join('');
+
+        const cityEntries = Object.entries(data.counts_by_city).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        const cityMax = Math.max(1, ...cityEntries.map(([, c]) => c));
+        document.getElementById('waitlist-by-city').innerHTML = cityEntries
+          .map(([city, count]) => barRow(city, count, cityMax, 'var(--series-vibe)'))
+          .join('');
+
+        document.getElementById('waitlist-table-wrap').innerHTML = buildRawTable(
+          data.rows,
+          ['created_at', 'name', 'email', 'city', 'source', 'position', 'confirmed_at'],
+        );
+
+        document.getElementById('waitlist-csv-btn').onclick = () => downloadCsv('/api/admin/waitlist?format=csv', 'waitlist.csv');
+      }
+
+      /* ---------------- CSV download (needs the auth header, so fetch + blob) ---------------- */
+
+      async function downloadCsv(path, filename) {
+        const res = await fetch(path, { headers: { Authorization: authHeader() } });
+        if (!res.ok) return;
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+    })();
+  </script>
+</body>
+</html>

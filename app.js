@@ -66,46 +66,11 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /* Shared helpers                                                       */
+  /* Shared helpers — see common.js (Shared.setFormMessage, .wireEmailField,  */
+  /* .tomorrowDateString, .todayDateString), reused by vibe.js too.       */
   /* ------------------------------------------------------------------ */
 
-  const setFormMessage = (el, text, kind) => {
-    el.textContent = text;
-    el.classList.remove('is-error', 'is-success');
-    if (kind) el.classList.add(kind);
-  };
-
-  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  // Validates one email field on blur and on submit: shows/hides its inline
-  // error span and marks the input invalid. Returns whether it currently
-  // passes (empty is only valid when the field isn't required).
-  const validateEmailField = (input, errorEl, { required = true } = {}) => {
-    const value = input.value.trim();
-    const empty = value.length === 0;
-    const valid = required ? (!empty && EMAIL_RE.test(value)) : (empty || EMAIL_RE.test(value));
-    input.classList.toggle('field-invalid', !valid);
-    if (errorEl) errorEl.classList.toggle('show', !valid);
-    return valid;
-  };
-
-  const wireEmailField = (inputId, errorId, opts) => {
-    const input = document.getElementById(inputId);
-    const errorEl = document.getElementById(errorId);
-    if (!input) return null;
-    input.addEventListener('blur', () => validateEmailField(input, errorEl, opts));
-    input.addEventListener('input', () => {
-      if (input.classList.contains('field-invalid')) validateEmailField(input, errorEl, opts);
-    });
-    return () => validateEmailField(input, errorEl, opts);
-  };
-
-  const tomorrowDateString = () => {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split('T')[0];
-  };
-  const todayDateString = () => new Date().toISOString().split('T')[0];
+  const { setFormMessage, wireEmailField, tomorrowDateString, todayDateString } = Shared;
 
   /* ------------------------------------------------------------------ */
   /* Invite form — real, posts to /api/invite                            */
@@ -173,6 +138,7 @@
         timezone: getTimezone(),
         message: document.getElementById('inv-message').value.trim(),
         consent,
+        origin: 'home',
       };
 
       inviteSubmit.disabled = true;

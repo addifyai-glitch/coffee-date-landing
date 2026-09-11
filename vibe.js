@@ -10,8 +10,6 @@
 (() => {
   'use strict';
 
-  const WHATSAPP_NUMBER = '436601128362'; // digits only, country code first
-
   Shared.initTheme();
   Shared.initChrome({ variant: 'vibe' });
   Shared.initCursor();
@@ -289,92 +287,175 @@
   });
 
   /* ------------------------------------------------------------------ */
-  /* WhatsApp message builder                                            */
-  /* ------------------------------------------------------------------ */
-
-  const buildWhatsAppUrl = (data) => {
-    const lines = [
-      'Hey 😄', '',
-      "Looks like we're officially meeting.", '',
-      `Activity: ${data.activity}`,
-      `Date: ${data.date}`,
-      `Time: ${data.time}`,
-      `City: ${data.city}`,
-      ...(data.place ? [`Place: ${data.place}`] : []),
-      '', 'Looking forward to it.',
-    ];
-    const text = encodeURIComponent(lines.join('\n'));
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
-  };
-
-  /* ------------------------------------------------------------------ */
-  /* Planning form — posts to /api/vibe (server-side insert + email)     */
+  /* Planning form — creates a real invite via /api/invite (origin=vibe),  */
+  /* same backend/table/tokens/emails/.ics as the homepage's invite form. */
+  /* Two delivery paths: email the recipient directly, or generate the    */
+  /* invite with no recipient email and let the sender share the link     */
+  /* themselves (WhatsApp / copy / native share).                         */
   /* ------------------------------------------------------------------ */
 
   const planForm = document.getElementById('plan-form');
-  const submitBtn = document.getElementById('submit-btn');
   const planFormMessage = document.getElementById('plan-form-message');
   const planStep = document.getElementById('plan-step');
   const confirmedStep = document.getElementById('confirmed-step');
   const confirmedRecap = document.getElementById('confirmed-recap');
-  const whatsappFallback = document.getElementById('whatsapp-fallback');
 
-  planForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    planFormMessage.textContent = '';
-    planFormMessage.classList.remove('is-error');
+  const sendEmailBtn = document.getElementById('send-email-btn');
+  const shareWhatsappBtn = document.getElementById('share-whatsapp-btn');
+  const recipientEmailInput = document.getElementById('recipient-email-input');
+  const recipientEmailError = document.getElementById('recipient-email-input-error');
+  const deliveryEmailEcho = document.getElementById('delivery-email-echo');
 
+  const emailSentNotice = document.getElementById('email-sent-notice');
+  const emailSentTo = document.getElementById('email-sent-to');
+  const shareLinks = document.getElementById('share-links');
+  const whatsappShareBtn = document.getElementById('whatsapp-share-btn');
+  const copyLinkBtn = document.getElementById('copy-link-btn');
+  const nativeShareBtn = document.getElementById('native-share-btn');
+
+  const validateSenderEmail = Shared.wireEmailField('email-input', 'email-input-error');
+  const validateRecipientEmail = Shared.wireEmailField('recipient-email-input', 'recipient-email-input-error', { required: false });
+
+  const senderEmailInputEl = document.getElementById('email-input');
+  senderEmailInputEl.addEventListener('input', () => {
+    deliveryEmailEcho.textContent = senderEmailInputEl.value.trim() || 'your email';
+  });
+
+  // Shared checks both delivery paths need: required text fields, activity,
+  // place, a future date/time, and consent. Returns the trimmed field values
+  // on success, or null (and shows the inline message) on failure.
+  const collectSharedFields = () => {
+    Shared.setFormMessage(planFormMessage, '', null);
+
+    const senderEmailOk = validateSenderEmail ? validateSenderEmail() : true;
+    if (!senderEmailOk) {
+      Shared.setFormMessage(planFormMessage, 'Fix the highlighted email address.', 'is-error');
+      return null;
+    }
+
+    const name = document.getElementById('name-input').value.trim();
+    const activity = document.getElementById('activity-input').value;
+    const place = document.getElementById('place-input').value.trim();
     const date = document.getElementById('date-input').value;
     const time = document.getElementById('time-input').value;
-    if (date && time && new Date(`${date}T${time}`).getTime() <= Date.now()) {
-      planFormMessage.textContent = 'Choose a date and time in the future.';
-      planFormMessage.classList.add('is-error');
-      return;
-    }
+    const message = document.getElementById('message-input').value.trim();
 
+    if (!name || !activity || !place || !date || !time) {
+      Shared.setFormMessage(planFormMessage, 'Fill in your name, the activity, a place, and a date/time.', 'is-error');
+      return null;
+    }
+    if (new Date(`${date}T${time}`).getTime() <= Date.now()) {
+      Shared.setFormMessage(planFormMessage, 'Choose a date and time in the future.', 'is-error');
+      return null;
+    }
     if (!document.getElementById('vibe-consent').checked) {
-      planFormMessage.textContent = 'Agree to the privacy policy to continue.';
-      planFormMessage.classList.add('is-error');
-      return;
+      Shared.setFormMessage(planFormMessage, 'Agree to the privacy policy to continue.', 'is-error');
+      return null;
     }
 
-    const data = {
-      name: document.getElementById('name-input').value.trim(),
-      email: document.getElementById('email-input').value.trim(),
-      phone: document.getElementById('phone-input').value.trim(),
-      activity: document.getElementById('activity-input').value,
-      date,
-      time,
-      city: document.getElementById('city-input').value.trim(),
-      place: document.getElementById('place-input').value.trim(),
-      message: document.getElementById('message-input').value.trim(),
+    return {
       website: document.getElementById('website-input').value,
+      sender_name: name,
+      sender_email: senderEmailInputEl.value.trim(),
+      activity,
+      place,
+      starts_at: new Date(`${date}T${time}`).toISOString(),
+      timezone: (() => {
+        try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Vienna'; } catch { return 'Europe/Vienna'; }
+      })(),
+      message,
       consent: true,
+      origin: 'vibe',
+      _display: { activity, place, date, time },
     };
+  };
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Locking it in...';
-
-    const { ok, data: response } = await Shared.apiPost('/api/vibe', data);
-    if (!ok || !response?.ok) {
-      console.warn('vibe submit failed', response);
-      planFormMessage.textContent = response?.error || 'Something went wrong saving that — but WhatsApp still works below.';
-      planFormMessage.classList.add('is-error');
-    }
-
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Lock it in 😎';
-
-    const waUrl = buildWhatsAppUrl(data);
-    whatsappFallback.href = waUrl;
-    window.open(waUrl, '_blank', 'noopener');
-
+  const showConfirmed = (fields) => {
     const rect = planForm.getBoundingClientRect();
     FX.heartBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, prefersReducedMotion ? 8 : 20);
-
-    const placeSuffix = data.place ? ` at ${data.place}` : '';
-    confirmedRecap.textContent = `Sent for ${data.activity} on ${data.date} at ${data.time} in ${data.city}${placeSuffix}.`;
+    const { activity, place, date, time } = fields._display;
+    confirmedRecap.textContent = `Sent for ${activity} on ${date} at ${time} at ${place}.`;
     planStep.classList.add('hidden');
     confirmedStep.classList.remove('hidden');
+  };
+
+  const setButtonsBusy = (busy) => {
+    sendEmailBtn.disabled = busy;
+    shareWhatsappBtn.disabled = busy;
+  };
+
+  sendEmailBtn.addEventListener('click', async () => {
+    const fields = collectSharedFields();
+    if (!fields) return;
+
+    const recipientOk = validateRecipientEmail ? Shared.validateEmailField(recipientEmailInput, recipientEmailError, { required: true }) : true;
+    if (!recipientOk) {
+      Shared.setFormMessage(planFormMessage, 'Enter a valid email for the person you\'re inviting.', 'is-error');
+      return;
+    }
+
+    fields.recipient_email = recipientEmailInput.value.trim();
+
+    setButtonsBusy(true);
+    sendEmailBtn.textContent = 'Sending...';
+    const { ok, data } = await Shared.apiPost('/api/invite', fields);
+    setButtonsBusy(false);
+    sendEmailBtn.textContent = 'Send by email 📧';
+
+    if (!ok || !data?.ok) {
+      Shared.setFormMessage(planFormMessage, data?.error || 'Something went wrong — try again.', 'is-error');
+      return;
+    }
+
+    Shared.track('invite_create_vibe');
+    emailSentTo.textContent = fields.recipient_email;
+    emailSentNotice.classList.remove('hidden');
+    shareLinks.classList.add('hidden');
+    showConfirmed(fields);
+  });
+
+  shareWhatsappBtn.addEventListener('click', async () => {
+    const fields = collectSharedFields();
+    if (!fields) return;
+
+    setButtonsBusy(true);
+    shareWhatsappBtn.textContent = 'Creating...';
+    const { ok, data } = await Shared.apiPost('/api/invite', fields);
+    setButtonsBusy(false);
+    shareWhatsappBtn.textContent = 'Share on WhatsApp 💬';
+
+    if (!ok || !data?.ok || !data.token) {
+      Shared.setFormMessage(planFormMessage, data?.error || 'Something went wrong — try again.', 'is-error');
+      return;
+    }
+
+    Shared.track('invite_create_vibe');
+
+    const respondUrl = `${window.location.origin}/respond.html?token=${encodeURIComponent(data.token)}`;
+    const shareText = `Hey! I have an idea: ${fields.activity} at ${fields.place}. Here's the invite — accept, suggest another time, or decline: ${respondUrl}`;
+
+    whatsappShareBtn.href = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+    whatsappShareBtn.onclick = () => Shared.track('share_whatsapp');
+
+    copyLinkBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(respondUrl);
+        copyLinkBtn.textContent = 'Copied! ✓';
+        setTimeout(() => { copyLinkBtn.textContent = 'Copy link 🔗'; }, 2000);
+      } catch {
+        Shared.setFormMessage(planFormMessage, 'Could not copy — long-press the button below to copy the link instead.', 'is-error');
+      }
+    };
+
+    if (typeof navigator.share === 'function') {
+      nativeShareBtn.classList.remove('hidden');
+      nativeShareBtn.onclick = () => {
+        navigator.share({ title: "Let's meet up", text: shareText, url: respondUrl }).catch(() => {});
+      };
+    }
+
+    emailSentNotice.classList.add('hidden');
+    shareLinks.classList.remove('hidden');
+    showConfirmed(fields);
   });
 })();

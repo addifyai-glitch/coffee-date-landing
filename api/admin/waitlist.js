@@ -3,23 +3,13 @@
    JSON list + counts by source/city by default; ?format=csv for a download.
    ========================================================================== */
 
-import crypto from 'node:crypto';
 import { getSupabase } from '../_lib/supabase.js';
+import { rejectIfUnauthorized } from '../_lib/adminAuth.js';
+import { toCsv } from '../_lib/csv.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ ok: false, error: 'Method not allowed' });
-
-  const adminUser = process.env.ADMIN_USER;
-  const adminPass = process.env.ADMIN_PASS;
-  if (!adminUser || !adminPass) {
-    console.error('ADMIN_USER / ADMIN_PASS missing from environment');
-    return res.status(500).json({ ok: false, error: 'Admin is not configured' });
-  }
-
-  if (!isAuthorized(req, adminUser, adminPass)) {
-    res.setHeader('WWW-Authenticate', 'Basic realm="Pookie Admin"');
-    return res.status(401).json({ ok: false, error: 'Unauthorized' });
-  }
+  if (rejectIfUnauthorized(req, res)) return;
 
   try {
     const supabase = getSupabase();
@@ -46,32 +36,6 @@ export default async function handler(req, res) {
   }
 }
 
-function isAuthorized(req, adminUser, adminPass) {
-  const auth = req.headers.authorization || '';
-  const [scheme, encoded] = auth.split(' ');
-  if (scheme !== 'Basic' || !encoded) return false;
-
-  let decoded;
-  try {
-    decoded = Buffer.from(encoded, 'base64').toString('utf8');
-  } catch {
-    return false;
-  }
-  const sepIndex = decoded.indexOf(':');
-  if (sepIndex === -1) return false;
-  const user = decoded.slice(0, sepIndex);
-  const pass = decoded.slice(sepIndex + 1);
-
-  return timingSafeEqualStr(user, adminUser) && timingSafeEqualStr(pass, adminPass);
-}
-
-function timingSafeEqualStr(a, b) {
-  const bufA = Buffer.from(String(a));
-  const bufB = Buffer.from(String(b));
-  if (bufA.length !== bufB.length) return false;
-  return crypto.timingSafeEqual(bufA, bufB);
-}
-
 function countBy(rows, key) {
   const counts = {};
   rows.forEach((row) => {
@@ -79,18 +43,4 @@ function countBy(rows, key) {
     counts[value] = (counts[value] || 0) + 1;
   });
   return counts;
-}
-
-function toCsv(rows) {
-  if (!rows.length) return '';
-  const columns = Object.keys(rows[0]);
-  const lines = [columns.join(',')];
-  rows.forEach((row) => {
-    lines.push(columns.map((col) => {
-      let val = row[col];
-      if (val === null || val === undefined) val = '';
-      return `"${String(val).replace(/"/g, '""')}"`;
-    }).join(','));
-  });
-  return lines.join('\n');
 }

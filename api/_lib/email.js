@@ -145,6 +145,7 @@ export async function sendWaitlistWelcome({ email, position, referralCode }) {
 }
 
 export async function sendInviteRecipient({ invite, token }) {
+  if (!invite.recipient_email) return null; // shared via link instead — caller shouldn't invoke this, but guard anyway
   const respondUrl = `${siteUrl()}/respond.html?token=${token}`;
   const when = formatDateTime(invite.starts_at, invite.timezone);
   const subject = `${invite.sender_name} invited you for a coffee ☕`;
@@ -165,11 +166,11 @@ export async function sendInviteRecipient({ invite, token }) {
 
 export async function sendInviteSenderCopy({ invite }) {
   const recipientLabel = invite.recipient_name || invite.recipient_email;
-  const subject = `Your coffee invite to ${recipientLabel} is sent`;
-  const html = wrapHtml({
-    heading: subject,
-    bodyHtml: "<p>We'll email you the moment they respond.</p>",
-  });
+  const subject = recipientLabel ? `Your coffee invite to ${recipientLabel} is sent` : 'Your invite link is ready';
+  const bodyHtml = recipientLabel
+    ? "<p>We'll email you the moment they respond.</p>"
+    : "<p>Share the link wherever you like — we'll email you the moment whoever opens it responds.</p>";
+  const html = wrapHtml({ heading: subject, bodyHtml });
   const data = await send({ to: invite.sender_email, subject, html });
   logSend('invite_sender_copy', invite.sender_email, data?.id);
   return data;
@@ -195,13 +196,16 @@ export async function sendInviteConfirmed({ invite, icsContent }) {
   // turn an already-successful acceptance into an error response for the
   // user. Previously these were sequential awaits: a thrown error on the
   // sender's send meant the recipient's was never even attempted, which is
-  // the most likely explanation for "one side got nothing."
-  const [senderResult, recipientResult] = await Promise.allSettled([
-    send({ to: invite.sender_email, subject, html, attachments }),
-    send({ to: invite.recipient_email, subject, html, attachments }),
-  ]);
+  // the most likely explanation for "one side got nothing." recipient_email
+  // is nullable (link-shared invites) — only attempt that send if it exists;
+  // the recipient's own confirmation in that case is the /respond.html
+  // "done" page's calendar-download link, not an email.
+  const sends = [send({ to: invite.sender_email, subject, html, attachments })];
+  if (invite.recipient_email) sends.push(send({ to: invite.recipient_email, subject, html, attachments }));
+
+  const [senderResult, recipientResult] = await Promise.allSettled(sends);
   logSendResult('invite_confirmed', invite.sender_email, senderResult);
-  logSendResult('invite_confirmed', invite.recipient_email, recipientResult);
+  if (recipientResult) logSendResult('invite_confirmed', invite.recipient_email, recipientResult);
   return { senderResult, recipientResult };
 }
 
@@ -216,18 +220,19 @@ export async function sendInviteDeclined({ invite }) {
     bodyHtml: '<p>No hard feelings — maybe another time.</p>',
   });
 
-  const recipientSubject = `You declined ${invite.sender_name}'s invite`;
-  const recipientHtml = wrapHtml({
-    heading: recipientSubject,
-    bodyHtml: `<p>We let ${escapeHtml(invite.sender_name)} know. No hard feelings.</p>`,
-  });
+  const sends = [send({ to: invite.sender_email, subject: senderSubject, html: senderHtml })];
+  if (invite.recipient_email) {
+    const recipientSubject = `You declined ${invite.sender_name}'s invite`;
+    const recipientHtml = wrapHtml({
+      heading: recipientSubject,
+      bodyHtml: `<p>We let ${escapeHtml(invite.sender_name)} know. No hard feelings.</p>`,
+    });
+    sends.push(send({ to: invite.recipient_email, subject: recipientSubject, html: recipientHtml }));
+  }
 
-  const [senderResult, recipientResult] = await Promise.allSettled([
-    send({ to: invite.sender_email, subject: senderSubject, html: senderHtml }),
-    send({ to: invite.recipient_email, subject: recipientSubject, html: recipientHtml }),
-  ]);
+  const [senderResult, recipientResult] = await Promise.allSettled(sends);
   logSendResult('invite_declined', invite.sender_email, senderResult);
-  logSendResult('invite_declined', invite.recipient_email, recipientResult);
+  if (recipientResult) logSendResult('invite_declined', invite.recipient_email, recipientResult);
   return { senderResult, recipientResult };
 }
 

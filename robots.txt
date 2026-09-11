@@ -4,5 +4,6 @@ Disallow: /api/
 Disallow: /welcome.html
 Disallow: /respond.html
 Disallow: /impressum.html
+Disallow: /admin.html
 
 Sitemap: https://pookie.addify.ae/sitemap.xml

@@ -16,8 +16,17 @@ export function buildInviteIcs(invite) {
     start.getUTCMinutes(),
   ];
 
-  const recipientLabel = invite.recipient_name || invite.recipient_email;
+  // recipient_email is nullable (invites shared via WhatsApp/link rather
+  // than emailed) — fall back to a generic label, and only add a second
+  // attendee entry when there's an actual email for it (the `ics` library
+  // expects a real address there, not null/undefined).
+  const recipientLabel = invite.recipient_name || invite.recipient_email || 'your guest';
   const recipientFirstName = recipientLabel.split(' ')[0];
+
+  const attendees = [{ name: invite.sender_name, email: invite.sender_email, rsvp: true, partstat: 'ACCEPTED' }];
+  if (invite.recipient_email) {
+    attendees.push({ name: recipientLabel, email: invite.recipient_email, rsvp: true });
+  }
 
   const { error, value } = createEvent({
     uid: `invite-${invite.id}@pookie.addify.ae`,
@@ -31,10 +40,7 @@ export function buildInviteIcs(invite) {
     location: invite.place,
     description: `${invite.message ? `${invite.message}\n\n` : ''}Arranged via Pookie`,
     organizer: { name: invite.sender_name, email: invite.sender_email },
-    attendees: [
-      { name: invite.sender_name, email: invite.sender_email, rsvp: true, partstat: 'ACCEPTED' },
-      { name: recipientLabel, email: invite.recipient_email, rsvp: true },
-    ],
+    attendees,
   });
 
   if (error) throw error;

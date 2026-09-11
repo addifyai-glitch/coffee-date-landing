@@ -41,7 +41,7 @@ create table invites (
   sender_name text not null,
   sender_email text not null,
   recipient_name text,
-  recipient_email text not null,
+  recipient_email text,                   -- nullable: absent for invites shared via a link (WhatsApp/copy) rather than emailed directly
   place text not null,
   starts_at timestamptz not null,
   timezone text not null default 'Europe/Vienna',
@@ -50,7 +50,8 @@ create table invites (
   proposed_starts_at timestamptz,         -- set when recipient proposes a new time
   responded_at timestamptz,
   created_at timestamptz not null default now(),
-  ip_hash text
+  ip_hash text,
+  origin text not null default 'home' check (origin in ('home', 'vibe'))
 );
 
 -- ==========================================================================
@@ -91,8 +92,11 @@ create table vibe_responses (
 
 alter table vibe_responses enable row level security;
 -- No policies on purpose: anon/authenticated get nothing. Service role bypasses RLS.
+-- Note: vibe.html no longer writes to this table as of the 'vibe.html becomes
+-- a real invite page' change — it now creates rows in `invites` (origin=
+-- 'vibe') via /api/invite instead. This table and /api/vibe.js are kept
+-- as-is (not deleted) since they weren't asked to be removed and still hold
+-- historical data; flagged in the handoff report as safe to retire later.
 
--- Added 2026-09-05: optional specific venue, alongside the existing city
--- field. Nullable, additive, safe to run against an existing table with
--- data already in it.
--- alter table vibe_responses add column if not exists place text;
+-- For an existing (pre-this-file) deployment, run the numbered files under
+-- supabase/migrations/ in the Supabase SQL editor instead of this file.

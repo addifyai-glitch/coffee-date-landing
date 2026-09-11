@@ -778,6 +778,21 @@ img, svg, canvas { max-width: 100%; }
 .checkbox-field input { margin-top: 3px; width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--color-rose); }
 .checkbox-field a { color: var(--color-link); font-weight: 600; }
 
+.delivery-block {
+  border-top: 1px solid var(--surface-border);
+  padding-top: 20px;
+  margin-top: -6px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.delivery-heading { font-weight: 700; font-family: var(--font-display); font-size: 1rem; margin: 0; }
+.delivery-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.delivery-actions .btn { flex: 1 1 200px; }
+.delivery-note { font-size: 0.85rem; color: var(--color-ink-soft); margin: 0; }
+
+.share-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; justify-content: center; }
+
 .btn-confirm {
   margin-top: 4px;
   background: var(--gradient-btn-confirm);

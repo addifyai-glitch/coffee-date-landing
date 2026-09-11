@@ -107,18 +107,14 @@
         <form id="plan-form" class="plan-form" novalidate>
           <div class="field-grid">
             <label class="field">
-              <span class="field-label">Name <em>(optional)</em></span>
-              <input type="text" id="name-input" name="name" autocomplete="name" placeholder="What should I call you?" />
+              <span class="field-label">Your name</span>
+              <input type="text" id="name-input" name="name" autocomplete="name" placeholder="What should we call you?" required />
             </label>
 
             <label class="field">
-              <span class="field-label">Email <em>(optional)</em></span>
-              <input type="email" id="email-input" name="email" autocomplete="email" placeholder="you@example.com" />
-            </label>
-
-            <label class="field">
-              <span class="field-label">Phone <em>(optional)</em></span>
-              <input type="tel" id="phone-input" name="phone" autocomplete="tel" placeholder="+1 555 123 4567" />
+              <span class="field-label">Your email</span>
+              <input type="email" id="email-input" name="email" autocomplete="email" placeholder="you@example.com" required />
+              <span class="field-error" id="email-input-error">Enter a valid email address.</span>
             </label>
 
             <label class="field">
@@ -151,6 +147,11 @@
             </label>
 
             <label class="field">
+              <span class="field-label">Place</span>
+              <input type="text" id="place-input" name="place" placeholder="A café, a spot — where should this happen?" required />
+            </label>
+
+            <label class="field">
               <span class="field-label">Date</span>
               <input type="date" id="date-input" name="date" required />
             </label>
@@ -161,18 +162,8 @@
             </label>
 
             <label class="field field-full">
-              <span class="field-label">City</span>
-              <input type="text" id="city-input" name="city" placeholder="Which city are you in?" required />
-            </label>
-
-            <label class="field field-full">
-              <span class="field-label">Place <em>(optional)</em></span>
-              <input type="text" id="place-input" name="place" placeholder="A café, a spot — anything specific in mind?" />
-            </label>
-
-            <label class="field field-full">
               <span class="field-label">Message <em>(optional)</em></span>
-              <textarea id="message-input" name="message" rows="3" placeholder="Anything I should know?"></textarea>
+              <textarea id="message-input" name="message" rows="3" placeholder="Anything they should know?"></textarea>
             </label>
           </div>
 
@@ -183,10 +174,25 @@
 
           <label class="checkbox-field">
             <input type="checkbox" id="vibe-consent" required />
-            <span>I agree to the <a href="/privacy.html">privacy policy</a>.</span>
+            <span>I agree to the <a href="/privacy.html">privacy policy</a> — replies go to my email above.</span>
           </label>
 
-          <button type="submit" id="submit-btn" class="btn btn-confirm magnetic">Lock it in <span class="btn-emoji">😎</span></button>
+          <div class="delivery-block">
+            <p class="delivery-heading">How do you want to send it?</p>
+
+            <label class="field">
+              <span class="field-label">Their email <em>(only needed for "Send by email")</em></span>
+              <input type="email" id="recipient-email-input" name="recipient_email" autocomplete="off" placeholder="them@example.com" />
+              <span class="field-error" id="recipient-email-input-error">Enter a valid email address.</span>
+            </label>
+
+            <div class="delivery-actions">
+              <button type="button" id="send-email-btn" class="btn btn-confirm magnetic">Send by email 📧</button>
+              <button type="button" id="share-whatsapp-btn" class="btn btn-yes magnetic">Share on WhatsApp 💬</button>
+            </div>
+            <p class="delivery-note">Either way, replies land in <strong id="delivery-email-echo">your email</strong> — no account needed on their side.</p>
+          </div>
+
           <p class="form-message" id="plan-form-message" aria-live="polite"></p>
         </form>
       </div>
@@ -207,7 +213,19 @@
           <p>Maybe you'll enjoy them too.</p>
         </div>
         <p id="confirmed-recap" class="confirmed-recap"></p>
-        <a id="whatsapp-fallback" class="btn btn-ghost" href="#" target="_blank" rel="noopener">Open WhatsApp</a>
+
+        <div id="email-sent-notice" class="hidden">
+          <p class="section-sub">We've sent it to <strong id="email-sent-to"></strong> — you'll hear back by email.</p>
+        </div>
+
+        <div id="share-links" class="hidden">
+          <p class="section-sub">Send it their way:</p>
+          <div class="share-actions">
+            <a id="whatsapp-share-btn" class="btn btn-yes magnetic" href="#" target="_blank" rel="noopener">Share on WhatsApp 💬</a>
+            <button type="button" id="copy-link-btn" class="btn btn-ghost">Copy link 🔗</button>
+            <button type="button" id="native-share-btn" class="btn btn-ghost hidden">Share... 📤</button>
+          </div>
+        </div>
       </div>
 
     </section>

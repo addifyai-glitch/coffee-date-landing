@@ -59,6 +59,7 @@ async function handleGet(req, res) {
         timezone: invite.timezone,
         message: invite.message,
         status: invite.status,
+        has_recipient_email: Boolean(invite.recipient_email),
       },
     });
   } catch (err) {
@@ -96,14 +97,22 @@ async function handlePost(req, res) {
     const senderName = cleanString(body.sender_name, { maxLength: 120 });
     const senderEmail = normalizeEmail(body.sender_email);
     const recipientName = cleanString(body.recipient_name, { maxLength: 120 });
-    const recipientEmail = normalizeEmail(body.recipient_email);
+    // Optional — an invite shared via WhatsApp/link has no recipient email on
+    // file. But if one WAS provided and doesn't parse, that's a real error,
+    // not "no recipient" (mirrors api/vibe.js's optional-email pattern).
+    const recipientEmailRaw = cleanString(body.recipient_email, { maxLength: 254 });
+    const recipientEmail = recipientEmailRaw ? normalizeEmail(recipientEmailRaw) : null;
+    if (recipientEmailRaw && !recipientEmail) {
+      return res.status(400).json({ ok: false, error: "That recipient email address doesn't look right." });
+    }
     const place = cleanString(body.place, { maxLength: 200 });
     const startsAt = body.starts_at ? new Date(body.starts_at) : null;
     const timezone = cleanString(body.timezone, { maxLength: 60 }) || 'Europe/Vienna';
     const message = cleanString(body.message, { maxLength: 1000 });
+    const origin = body.origin === 'vibe' ? 'vibe' : 'home';
 
-    if (!senderName || !senderEmail || !recipientEmail || !place || !startsAt || Number.isNaN(startsAt.getTime())) {
-      return res.status(400).json({ ok: false, error: 'Fill in your name, email, their email, a place, and a date/time.' });
+    if (!senderName || !senderEmail || !place || !startsAt || Number.isNaN(startsAt.getTime())) {
+      return res.status(400).json({ ok: false, error: 'Fill in your name, email, a place, and a date/time.' });
     }
     if (startsAt.getTime() <= Date.now()) {
       return res.status(400).json({ ok: false, error: 'Choose a date and time in the future.' });
@@ -120,16 +129,16 @@ async function handlePost(req, res) {
       timezone,
       message,
       ip_hash: ipHash,
+      origin,
     }).select().single();
     if (error) throw error;
 
     const token = signToken('inv', invite.id);
-    await Promise.allSettled([
-      sendInviteRecipient({ invite, token }),
-      sendInviteSenderCopy({ invite }),
-    ]);
+    const sends = [sendInviteSenderCopy({ invite })];
+    if (recipientEmail) sends.push(sendInviteRecipient({ invite, token }));
+    await Promise.allSettled(sends);
 
-    return res.status(200).json({ ok: true, id: invite.id });
+    return res.status(200).json({ ok: true, id: invite.id, token });
   } catch (err) {
     console.error(err);
     return res.status(err.status || 500).json({ ok: false, error: 'Something went wrong — try again.' });
